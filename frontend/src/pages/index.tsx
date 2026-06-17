@@ -13,7 +13,6 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { TbCheck } from "react-icons/tb";
 import { FormattedMessage } from "react-intl";
-import Logo from "../components/Logo";
 import Meta from "../components/Meta";
 import useUser from "../hooks/user.hook";
 import useConfig from "../hooks/config.hook";
@@ -164,22 +163,8 @@ export default function Home() {
               >
                 <FormattedMessage id="home.button.start" />
               </Button>
-              <Button
-                component={Link}
-                href="https://github.com/smp46/pingvin-share-x"
-                target="_blank"
-                variant="default"
-                radius="xl"
-                size="md"
-                className={classes.control}
-              >
-                <FormattedMessage id="home.button.source" />
-              </Button>
             </Group>
           </div>
-          <Group className={classes.image} align="center">
-            <Logo width={200} height={200} />
-          </Group>
         </div>
       </Container>
     </>

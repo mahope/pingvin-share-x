@@ -14,20 +14,20 @@ export default {
   // END navbar
 
   // /
-  "home.title": "A <h>self-hosted</h> file sharing platform.",
+  "home.title": "Send large files <h>simply and securely</h>.",
 
   "home.description":
-    "Do you really want to give your personal files in the hand of third parties like WeTransfer?",
-  "home.bullet.a.name": "Self-Hosted",
-  "home.bullet.a.description": "Host Pingvin Share on your own machine.",
-  "home.bullet.b.name": "Privacy",
+    "Share files up to 25 GB directly with me — no third parties, no hassle.",
+  "home.bullet.a.name": "Up to 25 GB",
+  "home.bullet.a.description": "Send really large files in one go — no WeTransfer limits.",
+  "home.bullet.b.name": "Secure & private",
   "home.bullet.b.description":
-    "Your files are yours and will never be accessed by third parties.",
-  "home.bullet.c.name": "No annoying file size limit",
+    "Your files live on my own server in Europe, not with a third party.",
+  "home.bullet.c.name": "No account needed",
   "home.bullet.c.description":
-    "Upload files as big as you want. Only your hard drive will be your limit.",
+    "You get a link, pick your files and send. It's that simple.",
 
-  "home.button.start": "Get started",
+  "home.button.start": "Sign in",
   "home.button.source": "Source code",
   // END /
 

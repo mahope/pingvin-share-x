@@ -12,15 +12,15 @@ export default {
   // END navbar
 
   // /
-  "home.title": "En <h>self-hosted</h> fildelingsplatform.",
-  "home.description": "Er du sikker på, at du vil overlade dine personlige filer til tredjeparter som WeTransfer?",
-  "home.bullet.a.name": "Self-Hosted",
-  "home.bullet.a.description": "Host Pingvin Share på din egen maskine.",
-  "home.bullet.b.name": "Privatliv",
-  "home.bullet.b.description": "Your files are yours and will never be accessed by third parties.",
-  "home.bullet.c.name": "Ingen irriterende grænse for filstørrelse",
-  "home.bullet.c.description": "Upload files as big as you want. Only your hard drive will be your limit.",
-  "home.button.start": "Kom i gang",
+  "home.title": "Send store filer <h>nemt og sikkert</h>.",
+  "home.description": "Del filer op til 25 GB direkte med mig — uden tredjeparter og uden besvær.",
+  "home.bullet.a.name": "Op til 25 GB",
+  "home.bullet.a.description": "Send rigtig store filer i ét hug — ingen WeTransfer-grænser.",
+  "home.bullet.b.name": "Sikkert & privat",
+  "home.bullet.b.description": "Dine filer ligger på min egen server i Europa, ikke hos en tredjepart.",
+  "home.bullet.c.name": "Ingen konto nødvendig",
+  "home.bullet.c.description": "Du får et link, vælger dine filer og sender. Så enkelt er det.",
+  "home.button.start": "Log ind",
   "home.button.source": "Source code",
   // END /
 
