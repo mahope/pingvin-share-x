@@ -16,6 +16,7 @@ const withPWA = require("next-pwa")({
 module.exports = withPWA({
   transpilePackages: ["@uiw/react-md-editor", "@uiw/react-markdown-preview"],
   output: "standalone",
+  outputFileTracingRoot: __dirname,
   images: {
     unoptimized: true,
   },
