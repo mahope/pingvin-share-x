@@ -57,7 +57,7 @@ const ManageUserTable = ({
                         <HoverTip label={t("common.button.edit")}>
                           <ActionIcon
                             variant="light"
-                            color="blue"
+                            color="ink"
                             size={25}
                             onClick={() =>
                               showUpdateUserModal(modals, user, getUsers)

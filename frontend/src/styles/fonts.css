@@ -1,0 +1,27 @@
+/* Mahojes to skrifter, selvhostet (subset-WOFF2 fra mahoje-dk, OFL-licens i
+   /fonts). Begge er variable fonte med vægtakse 400-700. */
+@font-face {
+  font-family: "Brygada 1918";
+  src: url("/fonts/brygada-1918-latin.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Schibsted Grotesk";
+  src: url("/fonts/schibsted-grotesk-latin.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Arial justeret til Schibsteds metrik, så skiftet ikke flytter layoutet. */
+@font-face {
+  font-family: "Schibsted Grotesk Fallback";
+  src: local("Arial");
+  ascent-override: 93.46%;
+  descent-override: 24.67%;
+  line-gap-override: 0%;
+  size-adjust: 104.49%;
+}

@@ -11,7 +11,7 @@ const useStyles = createStyles((theme) => ({
 
   label: {
     textAlign: "center",
-    fontWeight: 900,
+    fontWeight: 400,
     fontSize: 220,
     lineHeight: 1,
     marginBottom: 20,

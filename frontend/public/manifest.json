@@ -1,6 +1,7 @@
 {
-  "name": "Pingvin Share X",
-  "theme_color": "#46509e",
+  "name": "Mahoje Filer",
+  "short_name": "Filer",
+  "theme_color": "#15181c",
   "background_color": "#ffffff",
   "display": "standalone",
   "orientation": "portrait",

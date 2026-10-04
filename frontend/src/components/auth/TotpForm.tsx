@@ -58,10 +58,10 @@ function TotpForm({ redirectPath }: { redirectPath: string }) {
 
   return (
     <Container size={420} my={40}>
-      <Title order={2} align="center" weight={900}>
+      <Title order={2} align="center">
         <FormattedMessage id="totp.title" />
       </Title>
-      <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+      <Paper withBorder p={30} mt={30} radius="md">
         <form onSubmit={form.onSubmit(onSubmit)}>
           <Group position="center">
             <PinInput

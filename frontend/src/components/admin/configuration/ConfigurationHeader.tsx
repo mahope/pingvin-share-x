@@ -1,4 +1,4 @@
-import { Burger, Button, Group, Header, MediaQuery, Text } from "@mantine/core";
+import { Burger, Button, Group, Header, MediaQuery } from "@mantine/core";
 import Link from "next/link";
 import { Dispatch, SetStateAction } from "react";
 import { FormattedMessage } from "react-intl";
@@ -17,11 +17,8 @@ const ConfigurationHeader = ({
     <Header height={60} p="md">
       <div style={{ display: "flex", alignItems: "center", height: "100%" }}>
         <Group position="apart" w="100%">
-          <Link href="/" passHref>
-            <Group>
-              <Logo height={35} width={35} />
-              <Text weight={600}>{config.get("general.appName")}</Text>
-            </Group>
+          <Link href="/" aria-label={config.get("general.appName")}>
+            <Logo />
           </Link>
           <MediaQuery smallerThan="sm" styles={{ display: "none" }}>
             <Button variant="light" component={Link} href="/admin">

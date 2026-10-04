@@ -1,71 +1,88 @@
 import {
+  Box,
   Button,
   Container,
   createStyles,
-  Group,
-  List,
   Text,
-  ThemeIcon,
   Title,
 } from "@mantine/core";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { TbCheck } from "react-icons/tb";
 import { FormattedMessage } from "react-intl";
 import Meta from "../components/Meta";
 import useUser from "../hooks/user.hook";
 import useConfig from "../hooks/config.hook";
+import useTranslate from "../hooks/useTranslate.hook";
+import { tokens } from "../styles/mantine.style";
 
 const useStyles = createStyles((theme) => ({
   inner: {
-    display: "flex",
-    justifyContent: "space-between",
-    paddingTop: `calc(${theme.spacing.md} * 4)`,
-    paddingBottom: `calc(${theme.spacing.md} * 4)`,
+    paddingTop: 64,
+    paddingBottom: 64,
+
+    [theme.fn.smallerThan("sm")]: {
+      paddingTop: 24,
+      paddingBottom: 48,
+    },
   },
 
   content: {
-    maxWidth: 480,
-    marginRight: `calc(${theme.spacing.md} * 3)`,
-
-    [theme.fn.smallerThan("md")]: {
-      maxWidth: "100%",
-      marginRight: 0,
-    },
+    maxWidth: 600,
   },
 
   title: {
-    color: theme.colorScheme === "dark" ? theme.white : theme.black,
-    fontSize: 44,
-    lineHeight: 1.2,
-    fontWeight: 900,
+    color: tokens(theme).ink,
+    fontSize: 48,
+    lineHeight: 1.06,
+    letterSpacing: "-0.03em",
 
     [theme.fn.smallerThan("xs")]: {
-      fontSize: 28,
+      fontSize: 36,
     },
+  },
+
+  lead: {
+    color: tokens(theme).ink2,
+    fontSize: 18,
+    lineHeight: 1.55,
+    maxWidth: "36em",
+  },
+
+  list: {
+    listStyle: "none",
+    margin: 0,
+    padding: 0,
+    borderTop: `2px solid ${tokens(theme).ink}`,
+  },
+
+  item: {
+    padding: "16px 0",
+    borderBottom: `1px solid ${tokens(theme).rule}`,
+  },
+
+  itemName: {
+    color: tokens(theme).ink,
+    fontWeight: 600,
+    fontSize: 16,
+  },
+
+  itemText: {
+    color: tokens(theme).ink2,
+    fontSize: 16,
+    lineHeight: 1.55,
+    marginTop: 4,
   },
 
   control: {
+    height: 54,
+    paddingLeft: 28,
+    paddingRight: 28,
+    fontSize: 16,
+
     [theme.fn.smallerThan("xs")]: {
-      flex: 1,
+      width: "100%",
     },
-  },
-
-  image: {
-    [theme.fn.smallerThan("md")]: {
-      display: "none",
-    },
-  },
-
-  highlight: {
-    position: "relative",
-    backgroundColor:
-      theme.colorScheme === "dark"
-        ? theme.fn.rgba(theme.colors[theme.primaryColor][6], 0.55)
-        : theme.colors[theme.primaryColor][0],
-    borderRadius: theme.radius.sm,
-    padding: "4px 12px",
   },
 }));
 
@@ -74,6 +91,7 @@ export default function Home() {
   const { refreshUser } = useUser();
   const router = useRouter();
   const config = useConfig();
+  const t = useTranslate();
   const [signupEnabled, setSignupEnabled] = useState(true);
 
   // If user is already authenticated, redirect to the upload page
@@ -97,73 +115,43 @@ export default function Home() {
     return signupEnabled ? "/auth/signUp" : "/auth/signIn";
   };
 
+  const items = ["a", "b", "c"];
+
   return (
     <>
-      <Meta title="Home" />
-      <Container>
+      <Meta title={t("home.title")} />
+      <Container px={0}>
         <div className={classes.inner}>
           <div className={classes.content}>
-            <Title className={classes.title}>
-              <FormattedMessage
-                id="home.title"
-                values={{
-                  h: (chunks) => (
-                    <span className={classes.highlight}>{chunks}</span>
-                  ),
-                }}
-              />
+            <Title order={1} className={classes.title}>
+              <FormattedMessage id="home.title" />
             </Title>
-            <Text color="dimmed" mt="md">
+            <Text className={classes.lead} mt="lg">
               <FormattedMessage id="home.description" />
             </Text>
 
-            <List
-              mt={30}
-              spacing="sm"
-              size="sm"
-              icon={
-                <ThemeIcon size={20} radius="xl">
-                  <TbCheck size={12} />
-                </ThemeIcon>
-              }
-            >
-              <List.Item>
-                <div>
-                  <b>
-                    <FormattedMessage id="home.bullet.a.name" />
-                  </b>{" "}
-                  - <FormattedMessage id="home.bullet.a.description" />
-                </div>
-              </List.Item>
-              <List.Item>
-                <div>
-                  <b>
-                    <FormattedMessage id="home.bullet.b.name" />
-                  </b>{" "}
-                  - <FormattedMessage id="home.bullet.b.description" />
-                </div>
-              </List.Item>
-              <List.Item>
-                <div>
-                  <b>
-                    <FormattedMessage id="home.bullet.c.name" />
-                  </b>{" "}
-                  - <FormattedMessage id="home.bullet.c.description" />
-                </div>
-              </List.Item>
-            </List>
+            <Box component="ul" className={classes.list} mt={40}>
+              {items.map((key) => (
+                <li key={key} className={classes.item}>
+                  <div className={classes.itemName}>
+                    <FormattedMessage id={`home.bullet.${key}.name`} />
+                  </div>
+                  <div className={classes.itemText}>
+                    <FormattedMessage id={`home.bullet.${key}.description`} />
+                  </div>
+                </li>
+              ))}
+            </Box>
 
-            <Group mt={30}>
+            <Box mt={40}>
               <Button
                 component={Link}
                 href={getButtonHref()}
-                radius="xl"
-                size="md"
                 className={classes.control}
               >
                 <FormattedMessage id="home.button.start" />
               </Button>
-            </Group>
+            </Box>
           </div>
         </div>
       </Container>

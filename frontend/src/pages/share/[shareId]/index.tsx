@@ -193,7 +193,7 @@ const Share = ({ shareId }: { shareId: string }) => {
             <HoverTip label={t("common.button.edit")}>
               <ActionIcon
                 variant="light"
-                color="blue"
+                color="ink"
                 size="lg"
                 onClick={handleEditClick}
               >

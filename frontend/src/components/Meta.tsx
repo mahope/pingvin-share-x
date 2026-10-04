@@ -19,7 +19,8 @@ const Meta = ({
       <meta
         name="og:description"
         content={
-          description ?? "An open-source and self-hosted sharing platform."
+          description ??
+          "Send og modtag store filer med Mads Holst Jensen, Mahoje."
         }
       />
       <meta name="twitter:title" content={metaTitle} />

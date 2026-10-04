@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<style>rect{fill:#ffffff}polyline{stroke:#15181c}@media (prefers-color-scheme:dark){rect{fill:#121417}polyline{stroke:#f3f4f6}}</style>
+<rect width="512" height="512" rx="48"/>
+<g transform="translate(256 256) scale(0.94) translate(-257 -259)">
+<polyline points="62,400 182,168 262,284 342,118 452,400" fill="none" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/>
+</g></svg>

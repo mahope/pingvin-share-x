@@ -14,19 +14,18 @@ export default {
   // END navbar
 
   // /
-  "home.title": "Send large files <h>simply and securely</h>.",
-
+  "home.title": "Large files, sent directly",
   "home.description":
-    "Share files up to 25 GB directly with me — no third parties, no hassle.",
-  "home.bullet.a.name": "Up to 25 GB",
-  "home.bullet.a.description": "Send really large files in one go — no WeTransfer limits.",
-  "home.bullet.b.name": "Secure & private",
+    "This is where I send files to my clients, and where you can send files to me. Up to 25 GB at a time.",
+  "home.bullet.a.name": "Did you get a link from me?",
+  "home.bullet.a.description":
+    "Open the link, pick your files and press send. You don't need an account.",
+  "home.bullet.b.name": "Large files are fine",
   "home.bullet.b.description":
-    "Your files live on my own server in Europe, not with a third party.",
-  "home.bullet.c.name": "No account needed",
+    "Video, photos and zip files in one go. Files are sent in small chunks, so they get through on an ordinary connection too.",
+  "home.bullet.c.name": "With me, not a third party",
   "home.bullet.c.description":
-    "You get a link, pick your files and send. It's that simple.",
-
+    "Files are stored on my own storage in Europe and shared only with people who have the link.",
   "home.button.start": "Sign in",
   "home.button.source": "Source code",
   // END /

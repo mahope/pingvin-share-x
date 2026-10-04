@@ -125,7 +125,7 @@ const FileList = ({
                       {shareService.isShareTextFile(file.name) && (
                         <HoverTip label={t("share.copy-text-contents")}>
                           <ActionIcon
-                            color="blue"
+                            color="ink"
                             variant="light"
                             size={25}
                             onClick={() => {
@@ -168,7 +168,7 @@ const FileList = ({
                       {!share.hasPassword && (
                         <HoverTip label={t("common.button.copy-link")}>
                           <ActionIcon
-                            color="victoria"
+                            color="ink"
                             variant="light"
                             size={25}
                             onClick={() => copyFileLink(file)}

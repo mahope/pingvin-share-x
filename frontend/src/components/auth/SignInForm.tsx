@@ -100,7 +100,7 @@ const SignInForm = ({ redirectPath }: { redirectPath: string }) => {
           // Prompt the user to enter their totp code
           showNotification({
             icon: <TbInfoCircle />,
-            color: "blue",
+            color: "ink",
             radius: "md",
             title: t("signIn.notify.totp-required.title"),
             message: t("signIn.notify.totp-required.description"),
@@ -152,7 +152,7 @@ const SignInForm = ({ redirectPath }: { redirectPath: string }) => {
 
   return (
     <Container size={420} my={40}>
-      <Title order={2} align="center" weight={900}>
+      <Title order={2} align="center">
         <FormattedMessage id="signin.title" />
       </Title>
       {config.get("share.allowRegistration") && (
@@ -163,7 +163,7 @@ const SignInForm = ({ redirectPath }: { redirectPath: string }) => {
           </Anchor>
         </Text>
       )}
-      <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+      <Paper withBorder p={30} mt={30} radius="md">
         {config.get("oauth.disablePassword") || (
           <form
             onSubmit={form.onSubmit((values) => {

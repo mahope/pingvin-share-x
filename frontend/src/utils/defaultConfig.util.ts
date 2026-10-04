@@ -4,8 +4,8 @@ export function getDefaultConfig(): Config[] {
   return [
     {
       key: "general.appName",
-      value: "Pingvin Share X",
-      defaultValue: "Pingvin Share X",
+      value: "Mahoje Filer",
+      defaultValue: "Mahoje Filer",
       type: "string",
     },
     {

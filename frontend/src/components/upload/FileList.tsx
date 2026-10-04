@@ -50,7 +50,7 @@ const FileListRow = ({
             {editable && (
               <HoverTip label={t("common.button.edit")}>
                 <ActionIcon
-                  color="blue"
+                  color="ink"
                   variant="light"
                   size={25}
                   onClick={onEdit}
@@ -77,7 +77,7 @@ const FileListRow = ({
             {restorable && (
               <HoverTip label={t("common.button.undo")}>
                 <ActionIcon
-                  color="victoria"
+                  color="ink"
                   variant="light"
                   size={25}
                   onClick={onRestore}

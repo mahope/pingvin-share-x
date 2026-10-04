@@ -28,6 +28,7 @@ import configService from "../services/config.service";
 import userService from "../services/user.service";
 import GlobalStyle from "../styles/global.style";
 import globalStyle from "../styles/mantine.style";
+import "../styles/fonts.css";
 import Config from "../types/config.type";
 import { CurrentUser } from "../types/user.type";
 import i18nUtil from "../utils/i18n.util";
@@ -191,13 +192,15 @@ function App({ Component, pageProps }: AppProps) {
     defaultRadius: themeRadius,
   };
 
+  // Mahoje-temaet vinder over admin-indstillingerne for farve og radius,
+  // så brandet ikke kan skubbes ud af en gammel værdi i databasen.
   const mergedTheme: MantineThemeOverride = {
-    ...globalStyle,
     ...adminTheme,
+    ...globalStyle,
     colorScheme,
     colors: {
-      ...(globalStyle.colors ?? {}),
       ...(adminTheme.colors ?? {}),
+      ...(globalStyle.colors ?? {}),
     },
   };
 
@@ -250,10 +253,7 @@ function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <meta
-          name="viewport"
-          content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
-        />
+        <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
       <IntlProvider
         messages={i18nUtil.getLocaleByCode(language.current)?.messages}

@@ -135,7 +135,7 @@ const MyShares = () => {
                       </Link>
                       <HoverTip label={t("common.button.info")}>
                         <ActionIcon
-                          color="blue"
+                          color="ink"
                           variant="light"
                           size={25}
                           onClick={() => {
@@ -162,7 +162,7 @@ const MyShares = () => {
                       </HoverTip>
                       <HoverTip label={t("common.button.copy-link")}>
                         <ActionIcon
-                          color="victoria"
+                          color="ink"
                           variant="light"
                           size={25}
                           onClick={() => {

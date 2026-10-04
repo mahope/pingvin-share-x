@@ -130,11 +130,18 @@ const useStyles = createStyles((theme) => ({
     "&, &:hover": {
       backgroundColor:
         theme.colorScheme === "dark"
-          ? theme.fn.rgba(theme.colors[theme.primaryColor][9], 0.25)
-          : theme.colors[theme.primaryColor][0],
-      color:
-        theme.colors[theme.primaryColor][theme.colorScheme === "dark" ? 3 : 7],
+          ? theme.colors.dark[6]
+          : theme.colors.gray[0],
+      color: theme.colorScheme === "dark" ? theme.colors.dark[0] : theme.black,
+      fontWeight: 600,
     },
+  },
+
+  home: {
+    display: "inline-flex",
+    alignItems: "center",
+    minHeight: 44,
+    borderRadius: theme.radius.sm,
   },
 }));
 
@@ -332,11 +339,12 @@ const Header = () => {
     <>
       <MantineHeader height={HEADER_HEIGHT} mb={0} className={classes.root}>
         <Container className={classes.header}>
-          <Link href="/" passHref>
-            <Group>
-              <Logo height={35} width={35} />
-              <Text weight={600}>{config.get("general.appName")}</Text>
-            </Group>
+          <Link
+            href="/"
+            aria-label={config.get("general.appName")}
+            className={classes.home}
+          >
+            <Logo />
           </Link>
           <Group spacing={5} className={classes.links}>
             <Group>{desktopItems}</Group>

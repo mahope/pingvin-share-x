@@ -18,7 +18,7 @@ const Intro = () => {
       <Container size="xs">
         <Stack>
           <Center>
-            <Logo height={80} width={80} />
+            <Logo />
           </Center>
           <Center>
             <Title order={2}>Welcome to Pingvin Share X</Title>
