@@ -1,13 +1,14 @@
 import { Select } from "@mantine/core";
-import { getCookie, setCookie } from "cookies-next";
+import { getCookie } from "cookies-next";
 import { useState } from "react";
 import useTranslate from "../../hooks/useTranslate.hook";
 import { LOCALES } from "../../i18n/locales";
+import i18nUtil, { LANGUAGE_COOKIE } from "../../utils/i18n.util";
 
 const LanguagePicker = () => {
   const t = useTranslate();
   const [selectedLanguage, setSelectedLanguage] = useState(
-    getCookie("language")?.toString(),
+    getCookie(LANGUAGE_COOKIE)?.toString(),
   );
 
   const languages = Object.values(LOCALES).map((locale) => ({
@@ -20,12 +21,7 @@ const LanguagePicker = () => {
       description={t("account.card.language.description")}
       onChange={(value) => {
         setSelectedLanguage(value ?? "en");
-        setCookie("language", value, {
-          sameSite: "lax",
-          expires: new Date(
-            new Date().setFullYear(new Date().getFullYear() + 1),
-          ),
-        });
+        i18nUtil.setLanguageCookie(value ?? "en");
         location.reload();
       }}
       data={languages}

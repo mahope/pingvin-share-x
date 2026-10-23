@@ -31,7 +31,7 @@ import globalStyle from "../styles/mantine.style";
 import "../styles/fonts.css";
 import Config from "../types/config.type";
 import { CurrentUser } from "../types/user.type";
-import i18nUtil from "../utils/i18n.util";
+import i18nUtil, { LANGUAGE_COOKIE } from "../utils/i18n.util";
 import userPreferences from "../utils/userPreferences.util";
 import Footer from "../components/footer/Footer";
 import { getDefaultConfig } from "../utils/defaultConfig.util";
@@ -223,7 +223,7 @@ function App({ Component, pageProps }: AppProps) {
 
   useEffect(() => {
     if (!pageProps.language) return;
-    const cookieLanguage = getCookie("language");
+    const cookieLanguage = getCookie(LANGUAGE_COOKIE);
     if (!cookieLanguage) {
       if (!pageProps.isConfigFallback) {
         i18nUtil.setLanguageCookie(pageProps.language);
@@ -400,16 +400,28 @@ App.getInitialProps = async ({ ctx }: { ctx: GetServerSidePropsContext }) => {
 
     pageProps.route = ctx.req.url;
 
-    const requestLanguage = i18nUtil.getLanguageFromAcceptHeader(
-      ctx.req.headers["accept-language"],
-    );
-
     const defaultLanguage = pageProps.configVariables?.find(
       (item) => item.key === "general.defaultLanguage",
     )?.value;
 
+    // Mahoje Filer is only branded in Danish and English: Danish browsers get
+    // Danish, everyone else (e.g. Italian clients) gets English. The configured
+    // default language is only used when the browser sends no language at all.
+    const acceptLanguage = ctx.req.headers["accept-language"];
+    const brandedLanguage = acceptLanguage
+      ? acceptLanguage
+          .split(",")
+          .map((l) => l.split(";")[0].trim().toLowerCase().split("-")[0])
+          .find((l) => l === "da" || l === "en") === "da"
+        ? "da-DK"
+        : "en-US"
+      : undefined;
+
     pageProps.language =
-      ctx.req.cookies["language"] || defaultLanguage || requestLanguage;
+      ctx.req.cookies[LANGUAGE_COOKIE] ||
+      brandedLanguage ||
+      defaultLanguage ||
+      "en";
   }
   return { pageProps };
 };

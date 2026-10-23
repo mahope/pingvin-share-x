@@ -1,6 +1,6 @@
 import { getCookie } from "cookies-next";
 import { createIntl, createIntlCache, useIntl } from "react-intl";
-import i18nUtil from "../utils/i18n.util";
+import i18nUtil, { LANGUAGE_COOKIE } from "../utils/i18n.util";
 
 const useTranslate = () => {
   const intl = useIntl();
@@ -18,7 +18,7 @@ const cache = createIntlCache();
 
 export const translateOutsideContext = () => {
   const locale =
-    getCookie("language")?.toString() ?? navigator.language.split("-")[0];
+    getCookie(LANGUAGE_COOKIE)?.toString() ?? navigator.language.split("-")[0];
 
   const intl = createIntl(
     {

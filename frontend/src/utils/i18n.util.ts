@@ -35,8 +35,12 @@ const isLanguageSupported = (code: string) => {
   return Object.values(LOCALES).some((l) => l.code === code);
 };
 
+// Renamed from "language" so the Danish cookie old visitors got automatically
+// (back when Danish was forced for everyone) no longer overrides the browser.
+export const LANGUAGE_COOKIE = "mahoje-language";
+
 const setLanguageCookie = (code: string) => {
-  setCookie("language", code, {
+  setCookie(LANGUAGE_COOKIE, code, {
     sameSite: "lax",
     expires: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
   });
