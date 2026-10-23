@@ -7,8 +7,12 @@ export default class _Document extends Document {
   static getInitialProps = getInitialProps;
 
   render() {
+    // Match the language chosen in _app, so English visitors aren't offered
+    // a "translate from Danish" prompt.
+    const language: string | undefined =
+      this.props.__NEXT_DATA__.props?.pageProps?.language;
     return (
-      <Html lang="da">
+      <Html lang={language?.split("-")[0] ?? "da"}>
         <Head>
           <link rel="manifest" href="/manifest.json" />
           <link rel="icon" href="/img/favicon.ico" sizes="48x48" />
