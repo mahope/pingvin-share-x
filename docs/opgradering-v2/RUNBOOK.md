@@ -21,16 +21,19 @@ ZIP-download og en bucket-flytning med `mc mirror`. Se "Hvad er testet" nederst.
 
 1. **Backup af SQLite-volumet.** DB-migrationerne i v2 er ikke bagudkompatible, så en frisk
    backup er den eneste vej tilbage.
+   Tages **mens containeren er stoppet** (se rækkefølgen under Deploy), så SQLite-filen ikke
+   skrives til undervejs. Volumet hedder `filer-pingvin-jkbio0_pingvin-data` på hoved-Dokploy'en
+   (`hetzner-main`):
    ```bash
-   # På serveren, find containerens volume-mount (eller kør direkte mod volumet):
+   mkdir -p /root/backups
    docker run --rm \
-     -v <pingvin-data-volume>:/data:ro \
-     -v /home/mads/backups:/backup \
+     -v filer-pingvin-jkbio0_pingvin-data:/data:ro \
+     -v /root/backups:/backup \
      alpine tar czf /backup/pingvin-filer-data-$(date +%Y%m%d-%H%M).tar.gz -C /data .
    ```
    Verificér at arkivet er ikke-tomt og indeholder `pingvin-share.db`:
    ```bash
-   tar tzf /home/mads/backups/pingvin-filer-data-<dato>.tar.gz | grep pingvin-share.db
+   tar tzf /root/backups/pingvin-filer-data-<dato>.tar.gz | grep pingvin-share.db
    ```
 
 2. **Sidste `rclone sync` fra den gamle til den nye bucket.** Første kopi er allerede lavet
@@ -48,10 +51,19 @@ ZIP-download og en bucket-flytning med `mc mirror`. Se "Hvad er testet" nederst.
    rclone check hetzner:mahope/filer hetzner:mahoje-filer/filer --download
    ```
 
+   rclone-kommandoerne må KUN læse fra `mahope/filer` og skrive til `mahoje-filer/filer`. Kør
+   aldrig `rclone backend …`, `cleanup`, `purge` eller `delete` mod `mahope`: bucket'en er delt og
+   versioneret, og `backend cleanup-hidden` slettede 23/10-26 dens gamle versioner.
+
 3. **Tjek for igangværende uploads.** Aktive upload-links (fx Adamos' reverse share) må ikke
-   have en upload i gang, mens volumet backes op og bucketen synces sidste gang — en
-   igangværende multipart-upload på det gamle image er ikke med i backup/sync og vil ende som
-   et forældreløst objekt. Giv evt. besked til aktive uploadere, eller vent til der er stille.
+   have en upload i gang, når containeren stoppes — en igangværende multipart-upload på det
+   gamle image er ikke med i backup/sync. Giv besked til aktive uploadere, eller vent til der er
+   stille.
+
+4. **Opret et test-upload-link på det gamle image** (admin → Upload-links, 1 brug, 1 dag). Det
+   bruges efter cutover til at bevise, at links oprettet på v1 virker på v2, og at CORS mod den
+   rigtige Hetzner-bucket virker. Rør ikke kundernes egne links. Slet testlinket og dets deling
+   bagefter.
 
 ## Deploy
 
@@ -74,10 +86,13 @@ ZIP-download og en bucket-flytning med `mc mirror`. Se "Hvad er testet" nederst.
    oprettet før skiftet downloadede byte-identisk efter at kun `s3.bucketName` blev ændret.
 
 3. **Rækkefølge:**
-   1. Kør backup + sidste rclone-sync (punkt 1-2 ovenfor) mens det gamle image stadig kører.
-   2. Stop containeren (`pingvin`) i Dokploy.
-   3. Sæt nyt image-tag `:filer-N`, behold samme volume-mount til `/opt/app/backend/data`.
-   4. Start containeren. Migrationerne kører automatisk ved opstart. `prisma/migrations`
+   1. Stop containeren (`pingvin`) i Dokploy (`compose.stop`). Fra nu kan ingen uploade, så
+      hverken DB eller bucket ændrer sig.
+   2. Backup af volumet (punkt 1 under "Før cutover") og sidste rclone-sync + `check --download`
+      (punkt 2).
+   3. Sæt nyt image-tag `:filer-N` i compose-filen, behold samme volume-mount til
+      `/opt/app/backend/data`.
+   4. Deploy/start containeren. Migrationerne kører automatisk ved opstart. `prisma/migrations`
       indeholder 41 migrationer i alt, men på et eksisterende v1-volume er langt de fleste
       allerede anvendt — verificeret lokalt var det kun de 15 nyeste (migrationer fra
       30/4-2026 og frem) der reelt kørte, herunder flytning af
@@ -109,13 +124,13 @@ ZIP-download og en bucket-flytning med `mc mirror`. Se "Hvad er testet" nederst.
 - [ ] `Tillad uautoriserede delinger` (`security.allowUnauthenticatedShares`) står stadig på
       **fra**. Denne er tidligere observeret slået til af sig selv efter et image-skift —
       tjek den eksplicit, stol ikke på hukommelsen fra sidste deploy.
-- [ ] Forsiden, upload-siden og en delingsside viser dansk tekst og Mahoje-branding (ingen
-      engelske strenge). Sammenlign evt. med screenshots i `docs/opgradering-v2/screenshots/`.
-      **Vigtigt:** dette afhænger af configen `general.defaultLanguage` = `da-DK` — den styrer
-      sproget for gæster (anonyme besøgende uden en `language`-cookie), og vinder over browserens
-      `Accept-Language`-header. Hvis den af en eller anden grund er tom/`en-US` efter et
-      image-skift, ser en gæst med en dansk browser alligevel engelsk UI. Tjek den eksplicit som
-      en af config-værdierne i punkt 3.4/3.6 under Deploy, ikke kun via et kig på siden.
+- [ ] Sprog: med `Accept-Language: da-DK` viser forsiden "Store filer, sendt direkte", med
+      `Accept-Language: it-IT,it` viser den "Large files, sent directly" — også med en gammel
+      cookie `language=da-DK`. Siden commit ff78fe8 vælger browserens sprog (kun dansk eller
+      engelsk er brandet), og `general.defaultLanguage` bruges kun når browseren ikke sender noget
+      sprog. Cookien for brugerens eget valg hedder nu `mahoje-language`.
+- [ ] Upload via test-upload-linket fra "Før cutover" punkt 4 (oprettet på v1) med en fil over
+      25 MB i en rigtig browser, download igen og sammenlign sha256. Slet testlinket bagefter.
 
 ## Rollback
 
