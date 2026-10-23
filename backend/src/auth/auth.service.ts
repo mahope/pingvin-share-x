@@ -8,7 +8,7 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { User } from "@prisma/client";
+import { Prisma, User } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import * as argon from "argon2";
 import { Request, Response } from "express";
@@ -38,27 +38,68 @@ export class AuthService {
   ) {}
   private readonly logger = new Logger(AuthService.name);
 
-  async signUp(dto: AuthRegisterDTO, ip: string, isAdmin?: boolean) {
-    const isFirstUser = (await this.prisma.user.count()) == 0;
+  async signUp(
+    dto: AuthRegisterDTO,
+    ip: string,
+    isAdmin?: boolean,
+    skipVerification?: boolean,
+  ) {
+    const enableEmailVerification = this.config.get(
+      "security.enableEmailVerification",
+    );
+    const email = dto.email.toLowerCase().trim();
+
+    if (
+      typeof dto.password === "string" &&
+      !(await this.userService.enforcePasswordPolicy(dto.password))
+    ) {
+      throw new BadRequestException(this.i18n.t("auth.passwordPolicyNotMet"));
+    }
 
     const hash = dto.password ? await argon.hash(dto.password) : null;
     try {
-      const user = await this.prisma.user.create({
-        data: {
-          email: dto.email,
-          username: dto.username,
-          password: hash,
-          isAdmin: isAdmin ?? isFirstUser,
-        },
+      return await this.prisma.$transaction(async (tx) => {
+        const adminExists =
+          (await tx.user.count({ where: { isAdmin: true } })) > 0;
+        const shouldBeAdmin =
+          isAdmin ?? (!adminExists && (await tx.user.count()) === 0);
+        const needsVerification =
+          !shouldBeAdmin && !skipVerification && enableEmailVerification;
+
+        const user = await tx.user.create({
+          data: {
+            displayName: dto.displayName?.trim() || null,
+            email,
+            username: dto.username,
+            password: hash,
+            isAdmin: shouldBeAdmin,
+            isActivated: !needsVerification,
+            activationToken: needsVerification ? crypto.randomUUID() : null,
+            activationTokenExpiresAt: needsVerification
+              ? moment().add(1, "day").toDate()
+              : null,
+          },
+        });
+
+        if (user.activationToken) {
+          await this.emailService.sendVerificationEmail(
+            user.email,
+            user.activationToken,
+            user.displayName || user.username,
+          );
+          return { verificationRequired: true };
+        }
+
+        const { refreshToken, refreshTokenId } = await this.createRefreshToken(
+          user.id,
+          undefined,
+          tx,
+        );
+        const accessToken = await this.createAccessToken(user, refreshTokenId);
+
+        this.logger.log(`User ${user.email} signed up from IP ${ip}`);
+        return { accessToken, refreshToken, user };
       });
-
-      const { refreshToken, refreshTokenId } = await this.createRefreshToken(
-        user.id,
-      );
-      const accessToken = await this.createAccessToken(user, refreshTokenId);
-
-      this.logger.log(`User ${user.email} signed up from IP ${ip}`);
-      return { accessToken, refreshToken, user };
     } catch (e) {
       if (e instanceof PrismaClientKnownRequestError) {
         if (e.code == "P2002") {
@@ -81,13 +122,19 @@ export class AuthService {
     }
 
     if (!this.config.get("oauth.disablePassword")) {
+      const email = dto.email?.toLowerCase().trim();
       const user = await this.prisma.user.findFirst({
         where: {
-          OR: [{ email: dto.email }, { username: dto.username }],
+          OR: [{ email }, { username: dto.username }],
         },
       });
 
       if (user?.password && (await argon.verify(user.password, dto.password))) {
+        if (!user.isActivated) {
+          throw new UnauthorizedException(
+            this.i18n.t("auth.accountNotActivated"),
+          );
+        }
         this.logger.log(
           `Successful password login for user ${user.email} from IP ${ip}`,
         );
@@ -141,11 +188,12 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async requestResetPassword(email: string) {
+  async requestResetPassword(emailInput: string) {
     if (this.config.get("oauth.disablePassword"))
       throw new ForbiddenException(this.i18n.t("auth.passwordSignInDisabled"));
 
-    const user = await this.prisma.user.findFirst({
+    const email = emailInput.toLowerCase().trim();
+    const user = await this.prisma.user.findUnique({
       where: { email },
       include: { resetPasswordToken: true },
     });
@@ -161,29 +209,47 @@ export class AuthService {
       );
     }
 
-    // Delete old reset password token
-    if (user.resetPasswordToken) {
-      await this.prisma.resetPasswordToken.delete({
-        where: { token: user.resetPasswordToken.token },
+    await this.prisma.$transaction(async (tx) => {
+      // Delete old reset password token
+      if (user.resetPasswordToken) {
+        await tx.resetPasswordToken.delete({
+          where: { token: user.resetPasswordToken.token },
+        });
+      }
+
+      const { token } = await tx.resetPasswordToken.create({
+        data: {
+          expiresAt: moment().add(1, "hour").toDate(),
+          user: { connect: { id: user.id } },
+        },
       });
-    }
 
-    const { token } = await this.prisma.resetPasswordToken.create({
-      data: {
-        expiresAt: moment().add(1, "hour").toDate(),
-        user: { connect: { id: user.id } },
-      },
+      await this.emailService.sendResetPasswordEmail(
+        user.email,
+        token,
+        user.displayName || user.username,
+      );
     });
-
-    this.emailService.sendResetPasswordEmail(user.email, token);
   }
 
   async resetPassword(token: string, newPassword: string) {
     if (this.config.get("oauth.disablePassword"))
       throw new ForbiddenException(this.i18n.t("auth.passwordSignInDisabled"));
 
+    if (
+      typeof newPassword === "string" &&
+      !(await this.userService.enforcePasswordPolicy(newPassword))
+    ) {
+      throw new BadRequestException(this.i18n.t("auth.passwordPolicyNotMet"));
+    }
+
     const user = await this.prisma.user.findFirst({
-      where: { resetPasswordToken: { token } },
+      where: {
+        resetPasswordToken: {
+          token,
+          expiresAt: { gt: new Date() },
+        },
+      },
     });
 
     if (!user)
@@ -201,12 +267,74 @@ export class AuthService {
     });
   }
 
+  async verifyAccount(token: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { activationToken: token },
+    });
+
+    if (
+      !user ||
+      (user.activationTokenExpiresAt &&
+        user.activationTokenExpiresAt < new Date())
+    ) {
+      throw new BadRequestException(this.i18n.t("auth.tokenInvalidOrExpired"));
+    }
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        isActivated: true,
+        activationToken: null,
+        activationTokenExpiresAt: null,
+      },
+    });
+  }
+
+  async resendVerification(emailInput: string) {
+    const email = emailInput.toLowerCase().trim();
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) return;
+
+    if (user.isActivated) {
+      throw new BadRequestException(this.i18n.t("auth.userAlreadyActivated"));
+    }
+
+    const activationToken = crypto.randomUUID();
+    const activationTokenExpiresAt = moment().add(1, "day").toDate();
+
+    await this.prisma.$transaction(async (tx) => {
+      await tx.user.update({
+        where: { id: user.id },
+        data: {
+          activationToken,
+          activationTokenExpiresAt,
+        },
+      });
+
+      await this.emailService.sendVerificationEmail(
+        user.email,
+        activationToken,
+        user.displayName || user.username,
+      );
+    });
+  }
+
   async updatePassword(user: User, newPassword: string, oldPassword?: string) {
     const isPasswordValid =
       !user.password || (await argon.verify(user.password, oldPassword));
 
     if (!isPasswordValid)
       throw new ForbiddenException(this.i18n.t("auth.invalidPassword"));
+
+    if (
+      typeof newPassword === "string" &&
+      !(await this.userService.enforcePasswordPolicy(newPassword))
+    ) {
+      throw new BadRequestException(this.i18n.t("auth.passwordPolicyNotMet"));
+    }
 
     const hash = await argon.hash(newPassword);
 
@@ -310,9 +438,14 @@ export class AuthService {
     );
   }
 
-  async createRefreshToken(userId: string, idToken?: string) {
-    const sessionDuration = this.config.get("general.sessionDuration");
-    const { id, token } = await this.prisma.refreshToken.create({
+  async createRefreshToken(
+    userId: string,
+    idToken?: string,
+    tx?: Prisma.TransactionClient,
+  ) {
+    const prisma = tx || this.prisma;
+    const sessionDuration = this.config.get("security.sessionDuration");
+    const { id, token } = await prisma.refreshToken.create({
       data: {
         userId,
         expiresAt: moment()
@@ -340,7 +473,7 @@ export class AuthService {
     refreshToken?: string,
     accessToken?: string,
   ) {
-    const isSecure = this.config.get("general.secureCookies");
+    const isSecure = this.config.get("security.secureCookies");
     if (accessToken)
       response.cookie("access_token", accessToken, {
         sameSite: "lax",
@@ -349,7 +482,7 @@ export class AuthService {
       });
     if (refreshToken) {
       const now = moment();
-      const sessionDuration = this.config.get("general.sessionDuration");
+      const sessionDuration = this.config.get("security.sessionDuration");
       const maxAge = moment(now)
         .add(sessionDuration.value, sessionDuration.unit)
         .diff(now);

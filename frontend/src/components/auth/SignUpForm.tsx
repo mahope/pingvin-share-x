@@ -25,7 +25,24 @@ const SignUpForm = () => {
   const t = useTranslate();
   const { refreshUser } = useUser();
 
+  let minLength = 8;
+  let requireLowercase = false;
+  let requireUppercase = false;
+  let requireNumber = false;
+  let requireSpecialCharacter = false;
+
+  if (config.get("security.customPasswordPolicy")) {
+    minLength = config.get("security.minLength");
+    requireLowercase = config.get("security.requireLowercase");
+    requireUppercase = config.get("security.requireUppercase");
+    requireNumber = config.get("security.requireNumber");
+    requireSpecialCharacter = config.get("security.requireSpecialCharacter");
+  }
+
   const validationSchema = yup.object().shape({
+    displayName: yup
+      .string()
+      .matches(/^[\p{L} ,.'-]*$/u, t("common.error.name.invalid-chars")),
     email: yup.string().email(t("common.error.invalid-email")).required(),
     username: yup
       .string()
@@ -33,7 +50,23 @@ const SignUpForm = () => {
       .required(t("common.error.field-required")),
     password: yup
       .string()
-      .min(8, t("common.error.too-short", { length: 8 }))
+      .min(minLength, t("common.error.too-short", { length: minLength }))
+      .matches(
+        requireLowercase ? /[a-z]/ : /.*/,
+        t("common.error.password.lowercase"),
+      )
+      .matches(
+        requireUppercase ? /[A-Z]/ : /.*/,
+        t("common.error.password.uppercase"),
+      )
+      .matches(
+        requireNumber ? /[0-9]/ : /.*/,
+        t("common.error.password.number"),
+      )
+      .matches(
+        requireSpecialCharacter ? /[^a-zA-Z0-9]/ : /.*/,
+        t("common.error.password.special"),
+      )
       .required(t("common.error.field-required")),
   });
 
@@ -41,20 +74,33 @@ const SignUpForm = () => {
     initialValues: {
       email: "",
       username: "",
+      displayName: "",
       password: "",
     },
     validate: yupResolver(validationSchema),
   });
 
-  const signUp = async (email: string, username: string, password: string) => {
+  const signUp = async (
+    displayName: string,
+    email: string,
+    username: string,
+    password: string,
+  ) => {
     await authService
-      .signUp(email.trim(), username.trim(), password.trim())
-      .then(async () => {
-        const user = await refreshUser();
-        if (user?.isAdmin) {
-          router.replace("/admin/intro");
+      .signUp(displayName, email.trim(), username.trim(), password.trim())
+      .then(async (response) => {
+        if (response.data.verificationRequired) {
+          router.replace({
+            pathname: "/auth/verify/info",
+            query: { email: email.trim() },
+          });
         } else {
-          router.replace("/upload");
+          const user = await refreshUser();
+          if (user?.isAdmin) {
+            router.replace("/admin/intro");
+          } else {
+            router.replace("/upload");
+          }
         }
       })
       .catch(toast.axiosError);
@@ -65,7 +111,7 @@ const SignUpForm = () => {
       <Title order={2} align="center">
         <FormattedMessage id="signup.title" />
       </Title>
-      {config.get("share.allowRegistration") && (
+      {config.get("security.allowRegistration") && (
         <Text color="dimmed" size="sm" align="center" mt={5}>
           <FormattedMessage id="signup.description" />{" "}
           <Anchor component={Link} href={"signIn"} size="sm">
@@ -76,12 +122,23 @@ const SignUpForm = () => {
       <Paper withBorder p={30} mt={30} radius="md">
         <form
           onSubmit={form.onSubmit((values) =>
-            signUp(values.email, values.username, values.password),
+            signUp(
+              values.displayName,
+              values.email,
+              values.username,
+              values.password,
+            ),
           )}
         >
           <TextInput
+            label={t("signup.input.displayName")}
+            placeholder={t("signup.input.displayName.placeholder")}
+            {...form.getInputProps("displayName")}
+          />
+          <TextInput
             label={t("signup.input.username")}
             placeholder={t("signup.input.username.placeholder")}
+            mt="md"
             {...form.getInputProps("username")}
           />
           <TextInput

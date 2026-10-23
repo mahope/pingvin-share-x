@@ -84,9 +84,16 @@ const Body = ({
 
   const link = `${appUrl !== defaultAppUrl ? appUrl : window.location.origin}/s/${currentShare.id}`;
 
+  const resolvedMaxShareSize = currentShare.creator?.shareSizeLimit
+    ? parseInt(currentShare.creator.shareSizeLimit)
+    : maxShareSize;
+
+  const shareSizeRatio =
+    resolvedMaxShareSize > 0 ? currentShare.size / resolvedMaxShareSize : 0;
+
   const formattedShareSize = byteToHumanSizeString(currentShare.size);
-  const formattedMaxShareSize = byteToHumanSizeString(maxShareSize);
-  const shareSizeProgress = (currentShare.size / maxShareSize) * 100;
+  const formattedMaxShareSize = byteToHumanSizeString(resolvedMaxShareSize);
+  const shareSizeProgress = shareSizeRatio * 100;
 
   const formattedCreatedAt = moment(currentShare.createdAt).format("LLL");
   const formattedExpiration =
@@ -131,6 +138,15 @@ const Body = ({
         {currentShare.description || "-"}
       </Text>
 
+      {currentShare.recipients && currentShare.recipients.length > 0 && (
+        <Text size="sm">
+          <b>
+            <FormattedMessage id="upload.modal.accordion.email.title" />:{" "}
+          </b>
+          {currentShare.recipients.join(", ")}
+        </Text>
+      )}
+
       <Text size="sm">
         <b>
           <FormattedMessage id="account.shares.table.createdAt" />:{" "}
@@ -159,18 +175,16 @@ const Body = ({
       </Text>
 
       <Flex align="center" justify="center">
-        {currentShare.size / maxShareSize < 0.1 && (
+        {shareSizeRatio < 0.1 && (
           <Text size="xs" style={{ marginRight: "4px" }}>
             {formattedShareSize}
           </Text>
         )}
         <Progress
           value={shareSizeProgress}
-          label={
-            currentShare.size / maxShareSize >= 0.1 ? formattedShareSize : ""
-          }
+          label={shareSizeRatio >= 0.1 ? formattedShareSize : ""}
           style={{
-            width: currentShare.size / maxShareSize < 0.1 ? "70%" : "80%",
+            width: shareSizeRatio < 0.1 ? "70%" : "80%",
           }}
           size="xl"
           radius="xl"

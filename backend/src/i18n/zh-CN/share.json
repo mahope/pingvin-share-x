@@ -1,6 +1,6 @@
 {
   "notEnoughSpace": "磁盘空间不足",
-  "idInUse": "分享 ID 已在使用中",
+  "idInUse": "分享 ID 已被占用",
   "alreadyCompleted": "分享已完成",
   "completionRequiresFile": "您的分享中至少需要一个文件才能完成。",
   "notFound": "未找到分享",
@@ -8,9 +8,14 @@
   "anonymousNoExpire": "匿名分享无法过期",
   "anonymousNoUpdate": "匿名分享无法更新",
   "invalidExpiration": "过期日期无效",
-  "maxExpirationExceeded": "过期日期超过最大过期日期",
+  "maxExpirationExceeded": "过期时间超过允许的最长有效期",
+  "storageQuotaExceeded": "用户存储空间配额已超出 {exceededSize}",
+  "reverseShareQuotaExceeded": "文件收集创建者的存储空间配额已超出 {exceededSize}",
   "wrongPassword": "密码错误",
   "tokenRequired": "需要分享令牌",
-  "privateShare": "只有逆向分享创建者可以访问此分享",
-  "maxViewsExceeded": "超过最大查看次数"
+  "privateShare": "只有反向分享创建者可以访问此分享",
+  "maxViewsExceeded": "超过最大查看次数",
+  "restrictedToRecipients": "此分享仅限指定收件人查看，请登录后查看。",
+  "notAllowedToShare": "您没有创建分享的权限",
+  "maxSharesExceeded": "已达到最大活跃分享数限制 ({max})"
 }

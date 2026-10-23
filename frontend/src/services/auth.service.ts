@@ -22,8 +22,18 @@ const signInTotp = (totp: string, loginToken: string) => {
   });
 };
 
-const signUp = async (email: string, username: string, password: string) => {
-  const response = await api.post("auth/signUp", { email, username, password });
+const signUp = async (
+  displayName: string | undefined,
+  email: string,
+  username: string,
+  password: string,
+) => {
+  const response = await api.post("auth/signUp", {
+    displayName,
+    email,
+    username,
+    password,
+  });
 
   return response;
 };
@@ -58,6 +68,14 @@ const requestResetPassword = async (email: string) => {
 
 const resetPassword = async (token: string, password: string) => {
   await api.post("/auth/resetPassword", { token, password });
+};
+
+const verifyAccount = async (token: string) => {
+  await api.post(`/auth/verify`, { token });
+};
+
+const resendVerification = async (email: string) => {
+  await api.post("/auth/verify/resend", { email });
 };
 
 const updatePassword = async (oldPassword: string, password: string) => {
@@ -105,6 +123,8 @@ export default {
   updatePassword,
   requestResetPassword,
   resetPassword,
+  verifyAccount,
+  resendVerification,
   enableTOTP,
   verifyTOTP,
   disableTOTP,

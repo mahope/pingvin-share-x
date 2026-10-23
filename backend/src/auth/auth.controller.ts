@@ -23,6 +23,8 @@ import { AuthRegisterDTO } from "./dto/authRegister.dto";
 import { AuthSignInDTO } from "./dto/authSignIn.dto";
 import { AuthSignInTotpDTO } from "./dto/authSignInTotp.dto";
 import { EnableTotpDTO } from "./dto/enableTotp.dto";
+import { VerifyAccountDTO } from "./dto/verifyAccount.dto";
+import { ResendVerificationDTO } from "./dto/resendVerification.dto";
 import { ResetPasswordDTO } from "./dto/resetPassword.dto";
 import { TokenDTO } from "./dto/token.dto";
 import { UpdatePasswordDTO } from "./dto/updatePassword.dto";
@@ -42,7 +44,7 @@ export class AuthController {
   @Throttle({
     default: {
       limit: 20,
-      ttl: 5 * 60,
+      ttl: 5 * 60 * 1000,
     },
   })
   async signUp(
@@ -50,7 +52,7 @@ export class AuthController {
     @Req() { ip }: Request,
     @Res({ passthrough: true }) response: Response,
   ) {
-    if (!this.config.get("share.allowRegistration"))
+    if (!this.config.get("security.allowRegistration"))
       throw new ForbiddenException(this.i18n.t("auth.registrationNotAllowed"));
 
     const result = await this.authService.signUp(dto, ip);
@@ -68,7 +70,7 @@ export class AuthController {
   @Throttle({
     default: {
       limit: 20,
-      ttl: 5 * 60,
+      ttl: 5 * 60 * 1000,
     },
   })
   @HttpCode(200)
@@ -94,7 +96,7 @@ export class AuthController {
   @Throttle({
     default: {
       limit: 20,
-      ttl: 5 * 60,
+      ttl: 5 * 60 * 1000,
     },
   })
   @HttpCode(200)
@@ -117,7 +119,7 @@ export class AuthController {
   @Throttle({
     default: {
       limit: 20,
-      ttl: 5 * 60,
+      ttl: 5 * 60 * 1000,
     },
   })
   @HttpCode(202)
@@ -129,12 +131,36 @@ export class AuthController {
   @Throttle({
     default: {
       limit: 20,
-      ttl: 5 * 60,
+      ttl: 5 * 60 * 1000,
     },
   })
   @HttpCode(204)
   async resetPassword(@Body() dto: ResetPasswordDTO) {
     return await this.authService.resetPassword(dto.token, dto.password);
+  }
+
+  @Post("verify")
+  @Throttle({
+    default: {
+      limit: 20,
+      ttl: 5 * 60 * 1000,
+    },
+  })
+  @HttpCode(204)
+  async verifyAccount(@Body() dto: VerifyAccountDTO) {
+    await this.authService.verifyAccount(dto.token);
+  }
+
+  @Post("verify/resend")
+  @Throttle({
+    default: {
+      limit: 20,
+      ttl: 5 * 60 * 1000,
+    },
+  })
+  @HttpCode(204)
+  async resendVerification(@Body() dto: ResendVerificationDTO) {
+    await this.authService.resendVerification(dto.email);
   }
 
   @Patch("password")
@@ -178,7 +204,7 @@ export class AuthController {
       request.cookies.access_token,
     );
 
-    const isSecure = this.config.get("general.secureCookies");
+    const isSecure = this.config.get("security.secureCookies");
     response.cookie("access_token", "", {
       maxAge: -1,
       secure: isSecure,

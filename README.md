@@ -37,9 +37,47 @@ The website is now listening on `http://localhost:3000`.
 > [!TIP]
 > Checkout [stonith404/Pocket ID](https://github.com/stonith404/pocket-id), a user-friendly OIDC provider that lets you easily log in to services like Pingvin Share X using Passkeys. Made by the original creator of Pingvin Share.
 
+### Beta Channel (Testing)
+
+Pingvin Share X now has a beta, this is where all (non-time sensitive) bug fixes, features and other updates will go before reaching stable.
+
+To use the Beta channel:
+1. Update the container image tag in your `docker-compose.yml` to `:beta`:
+   ```yaml
+   image: smp46/pingvin-share-x:beta
+   # or ghcr.io/smp46/pingvin-share-x:beta
+   ```
+2. Pull the latest beta image and recreate the container:
+   ```bash
+   docker compose pull
+   docker compose up -d
+   ```
+
+> [!IMPORTANT]
+> If you encounter any bugs, regressions, or have any other feedback while running the beta version, please [open a GitHub Issue](https://github.com/smp46/pingvin-share-x/issues). Please ensure you specify the exact version (including the beta tag).
+
+### Alternative Deployments
+
+Pingvin Share X can also be deployed through other platforms. For more information, see the [documentation](https://smp46.github.io/pingvin-share-x/setup/installation#alternative-deployments).
+
 ## Documentation
 
 For more installation options and advanced configurations, please refer to the [documentation](https://smp46.github.io/pingvin-share-x/).
+
+## Sponsors
+
+If you find Pingvin Share X useful and would like to support its ongoing development and maintenance please consider becoming a sponsor! 
+
+I would like to host a demo instance online for people to try out Pingvin, your sponsorship would make this possible.
+
+As a token of appreciation, sponsors can have their profile or company logo displayed right here in this section.
+
+### Our Awesome Sponsors
+
+| <a href="https://github.com/sponsors/smp46"><img src="https://github.com/images/modules/logos_page/GitHub-Mark.png" width="60px;" alt=""/><br /><sub><b>Your Name Here</b></sub></a> |
+| :---: |
+
+💖 Support the project via [GitHub Sponsors](https://github.com/sponsors/smp46)
 
 ## Contributing
 
@@ -47,12 +85,12 @@ All contributions are welcome, including issues, feature suggestions, pull reque
 
 ### Translations
 
-This project supports 28 languages so far (to varying degrees), you can help complete
+This project supports 32 languages so far (to varying degrees), you can help complete
 those translations or add more at [CrowdIn](https://crowdin.com/project/pingvin-share-x).
 
 ### AI Usage Policy
 
-Anyone submitting code to this repo needs to read and comply with the project's [AI Usage Policy](https://github.com/smp46/pingvin-share-x/blob/main/AI_USAGE_POLICY.md). Submissions that do not comply with be closed.
+Anyone submitting code to this repo needs to read and comply with the project's [AI Usage Policy](https://github.com/smp46/pingvin-share-x/blob/main/AI_USAGE_POLICY.md). Please respect the time of maintainers, submissions that do not comply with be closed.
 
 ### Getting started
 
@@ -103,18 +141,3 @@ You're all set!
 #### Testing
 
 At the moment we only have system tests for the backend. To run these tests, run `npm run test:system` in the backend folder.
-
-## Sponsors
-
-If you find Pingvin Share X useful and would like to support its ongoing development and maintenance please consider becoming a sponsor! 
-
-I would like to host a demo instance online for people to try out Pingvin, your sponsorship would make this possible.
-
-As a token of appreciation, sponsors can have their profile or company logo displayed right here in this section.
-
-### Our Awesome Sponsors
-
-| <a href="https://github.com/sponsors/smp46"><img src="https://github.com/images/modules/logos_page/GitHub-Mark.png" width="60px;" alt=""/><br /><sub><b>Your Name Here</b></sub></a> |
-| :---: |
-
-💖 Support the project via [GitHub Sponsors](https://github.com/sponsors/smp46)

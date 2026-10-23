@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from "@nestjs/common";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import * as moment from "moment";
 import { I18nService } from "nestjs-i18n";
 import { ConfigService } from "src/config/config.service";
@@ -27,38 +32,89 @@ export class ReverseShareService {
       )
       .toDate();
 
+    const creator = await this.prisma.user.findUnique({
+      where: { id: creatorId },
+    });
+    if (!creator)
+      throw new BadRequestException(this.i18n.t("auth.userNotFound"));
+
+    if (creator.allowCreateReverseShares === false) {
+      throw new ForbiddenException(
+        this.i18n.t("reverseShare.notAllowedToCreate"),
+      );
+    }
+
+    if (creator.maxReverseShares != null && creator.maxReverseShares > 0) {
+      const activeReverseSharesCount = await this.prisma.reverseShare.count({
+        where: {
+          creatorId,
+          shareExpiration: { gt: new Date() },
+        },
+      });
+      if (activeReverseSharesCount >= creator.maxReverseShares) {
+        throw new BadRequestException(
+          this.i18n.t("reverseShare.maxReverseSharesExceeded", {
+            args: { max: creator.maxReverseShares },
+          }),
+        );
+      }
+    }
+
     const parsedExpiration = parseRelativeDateToAbsolute(data.shareExpiration);
     const maxExpiration = this.config.get("share.maxExpiration");
     if (
+      !creator?.isAdmin &&
       maxExpiration.value !== 0 &&
       parsedExpiration >
         moment().add(maxExpiration.value, maxExpiration.unit).toDate()
     ) {
       throw new BadRequestException(this.i18n.t("share.maxExpirationExceeded"));
     }
+    const userMaxShareSize = creator?.shareSizeLimit
+      ? parseInt(creator.shareSizeLimit)
+      : parseInt(this.config.get("share.maxSize"));
 
-    const globalMaxShareSize = this.config.get("share.maxSize");
-
-    if (globalMaxShareSize < data.maxShareSize)
+    if (userMaxShareSize < parseInt(data.maxShareSize))
       throw new BadRequestException(
         this.i18n.t("reverseShare.maxShareSizeExceeded", {
-          args: { maxSize: globalMaxShareSize },
+          args: { maxSize: userMaxShareSize },
         }),
       );
 
-    const reverseShare = await this.prisma.reverseShare.create({
-      data: {
-        shareExpiration: expirationDate,
-        remainingUses: data.maxUseCount,
-        maxShareSize: data.maxShareSize,
-        sendEmailNotification: data.sendEmailNotification,
-        simplified: data.simplified,
-        publicAccess: data.publicAccess,
-        creatorId,
-      },
-    });
+    if (data.token) {
+      if (!(await this.isReverseShareTokenAvailable(data.token)).isAvailable) {
+        throw new BadRequestException(this.i18n.t("reverseShare.tokenInUse"));
+      }
+    }
 
-    return reverseShare.token;
+    try {
+      const reverseShare = await this.prisma.reverseShare.create({
+        data: {
+          token: data.token || undefined,
+          shareExpiration: expirationDate,
+          remainingUses: data.maxUseCount,
+          maxShareSize: data.maxShareSize,
+          sendEmailNotification: data.sendEmailNotification,
+          simplified: data.simplified,
+          publicAccess: data.publicAccess,
+          creatorId,
+        },
+      });
+
+      return reverseShare.token;
+    } catch (e) {
+      if (e instanceof PrismaClientKnownRequestError && e.code === "P2002") {
+        throw new BadRequestException(this.i18n.t("reverseShare.tokenInUse"));
+      }
+      throw e;
+    }
+  }
+
+  async isReverseShareTokenAvailable(token: string) {
+    const reverseShare = await this.prisma.reverseShare.findUnique({
+      where: { token },
+    });
+    return { isAvailable: !reverseShare };
   }
 
   async getByToken(reverseShareToken?: string) {
@@ -66,6 +122,7 @@ export class ReverseShareService {
 
     const reverseShare = await this.prisma.reverseShare.findUnique({
       where: { token: reverseShareToken },
+      include: { creator: true },
     });
 
     return reverseShare;

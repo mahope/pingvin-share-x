@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Center,
+  useMantineTheme,
   Group,
   Space,
   Stack,
@@ -21,7 +22,9 @@ import {
   TbLink,
   TbLock,
   TbTrash,
+  TbUsers,
 } from "react-icons/tb";
+import { FaUserLock } from "react-icons/fa";
 import { FormattedMessage } from "react-intl";
 import Meta from "../../components/Meta";
 import showShareInformationsModal from "../../components/share/showShareInformationsModal";
@@ -29,6 +32,7 @@ import showShareLinkModal from "../../components/account/showShareLinkModal";
 import { HoverTip } from "../../components/core/HoverTip";
 import CenterLoader from "../../components/core/CenterLoader";
 import useConfig from "../../hooks/config.hook";
+import useUser from "../../hooks/user.hook";
 import useTranslate from "../../hooks/useTranslate.hook";
 import shareService from "../../services/share.service";
 import { MyShare } from "../../types/share.type";
@@ -38,7 +42,9 @@ const MyShares = () => {
   const modals = useModals();
   const clipboard = useClipboard();
   const config = useConfig();
+  const { user } = useUser();
   const t = useTranslate();
+  const theme = useMantineTheme();
 
   const [shares, setShares] = useState<MyShare[]>();
 
@@ -63,10 +69,14 @@ const MyShares = () => {
             <Text>
               <FormattedMessage id="account.shares.description.empty" />
             </Text>
-            <Space h={5} />
-            <Button component={Link} href="/upload" variant="light">
-              <FormattedMessage id="account.shares.button.create" />
-            </Button>
+            {user?.allowShare !== false && (
+              <>
+                <Space h={5} />
+                <Button component={Link} href="/upload" variant="light">
+                  <FormattedMessage id="account.shares.button.create" />
+                </Button>
+              </>
+            )}
           </Stack>
         </Center>
       ) : (
@@ -80,6 +90,7 @@ const MyShares = () => {
                 <th>
                   <FormattedMessage id="account.shares.table.name" />
                 </th>
+
                 <th>
                   <FormattedMessage id="account.shares.table.visitors" />
                 </th>
@@ -90,138 +101,178 @@ const MyShares = () => {
               </tr>
             </thead>
             <tbody>
-              {shares.map((share) => (
-                <tr key={share.id}>
-                  <td>
-                    <Group spacing="xs">
-                      {share.id}{" "}
-                      {share.security?.passwordProtected && (
-                        <TbLock
-                          color="orange"
-                          title={t("account.shares.table.password-protected")}
-                        />
-                      )}
-                    </Group>
-                  </td>
-                  <td>{share.name}</td>
-                  <td>
-                    {share.security?.maxViews ? (
-                      <FormattedMessage
-                        id="account.shares.table.visitor-count"
-                        values={{
-                          count: share.views,
-                          max: share.security.maxViews,
-                        }}
-                      />
-                    ) : (
-                      share.views
-                    )}
-                  </td>
-                  <td>
-                    {moment(share.expiration).unix() === 0 ? (
-                      <FormattedMessage id="account.shares.table.expiry-never" />
-                    ) : (
-                      moment(share.expiration).format("LLL")
-                    )}
-                  </td>
-                  <td>
-                    <Group position="right">
-                      <Link href={`/share/${share.id}/edit`}>
-                        <HoverTip label={t("account.shares.button.edit")}>
-                          <ActionIcon color="orange" variant="light" size={25}>
-                            <TbPlusMinus />
-                          </ActionIcon>
-                        </HoverTip>
-                      </Link>
-                      <HoverTip label={t("common.button.info")}>
-                        <ActionIcon
-                          color="ink"
-                          variant="light"
-                          size={25}
-                          onClick={() => {
-                            showShareInformationsModal(
-                              modals,
-                              share,
-                              parseInt(config.get("share.maxSize")),
-                              config.get("general.appUrl"),
-                              config.get("general.appUrl", true),
-                              config.get("share.maxExpiration"),
-                              (updatedShare) =>
-                                setShares(
-                                  shares.map((item) =>
-                                    item.id === updatedShare.id
-                                      ? updatedShare
-                                      : item,
-                                  ),
-                                ),
-                            );
+              {shares.map((share) => {
+                return (
+                  <tr key={share.id}>
+                    <td>
+                      <Group spacing="xs">
+                        {share.id}{" "}
+                        {share.security?.passwordProtected && (
+                          <HoverTip label="Password Protected">
+                            <span style={{ display: "inline-flex" }}>
+                              <TbLock
+                                color="orange"
+                                title={t(
+                                  "account.shares.table.password-protected",
+                                )}
+                              />
+                            </span>
+                          </HoverTip>
+                        )}
+                        {config.get("share.enableUserRecipients") &&
+                          (share.security?.restrictToRecipients ? (
+                            <HoverTip label="Recipients Only">
+                              <span style={{ display: "inline-flex" }}>
+                                <FaUserLock
+                                  color={theme.colors.gray[6]}
+                                  title={t(
+                                    "account.shares.table.restricted-to-recipients",
+                                  )}
+                                />
+                              </span>
+                            </HoverTip>
+                          ) : share.recipients?.length ? (
+                            <HoverTip label="Sent to Recipients">
+                              <span style={{ display: "inline-flex" }}>
+                                <TbUsers
+                                  color={theme.colors.gray[6]}
+                                  title={t(
+                                    "account.shares.table.shared-with-recipients",
+                                  )}
+                                />
+                              </span>
+                            </HoverTip>
+                          ) : null)}
+                      </Group>
+                    </td>
+                    <td>{share.name}</td>
+                    <td>
+                      {share.security?.maxViews ? (
+                        <FormattedMessage
+                          id="account.shares.table.visitor-count"
+                          values={{
+                            count: share.views,
+                            max: share.security.maxViews,
                           }}
-                        >
-                          <TbInfoCircle />
-                        </ActionIcon>
-                      </HoverTip>
-                      <HoverTip label={t("common.button.copy-link")}>
-                        <ActionIcon
-                          color="ink"
-                          variant="light"
-                          size={25}
-                          onClick={() => {
-                            if (window.isSecureContext) {
-                              clipboard.copy(
-                                `${config.get("general.appUrl") !== config.get("general.appUrl", true) ? config.get("general.appUrl") : window.location.origin}/s/${share.id}`,
-                              );
-                              toast.success(t("common.notify.copied-link"));
-                            } else {
-                              showShareLinkModal(
+                        />
+                      ) : (
+                        share.views
+                      )}
+                    </td>
+                    <td>
+                      {moment(share.expiration).unix() === 0 ? (
+                        <FormattedMessage id="account.shares.table.expiry-never" />
+                      ) : (
+                        moment(share.expiration).format("LLL")
+                      )}
+                    </td>
+                    <td>
+                      <Group position="right">
+                        <Link href={`/share/${share.id}/edit`}>
+                          <HoverTip label={t("account.shares.button.edit")}>
+                            <ActionIcon
+                              color="orange"
+                              variant="light"
+                              size={25}
+                            >
+                              <TbPlusMinus />
+                            </ActionIcon>
+                          </HoverTip>
+                        </Link>
+                        <HoverTip label={t("common.button.info")}>
+                          <ActionIcon
+                            color="ink"
+                            variant="light"
+                            size={25}
+                            onClick={() => {
+                              showShareInformationsModal(
                                 modals,
-                                share.id,
+                                share,
+                                parseInt(config.get("share.maxSize")),
                                 config.get("general.appUrl"),
                                 config.get("general.appUrl", true),
+                                user?.isAdmin
+                                  ? { value: 0, unit: "days" }
+                                  : config.get("share.maxExpiration"),
+                                (updatedShare) =>
+                                  setShares(
+                                    shares.map((item) =>
+                                      item.id === updatedShare.id
+                                        ? updatedShare
+                                        : item,
+                                    ),
+                                  ),
                               );
-                            }
-                          }}
-                        >
-                          <TbLink />
-                        </ActionIcon>
-                      </HoverTip>
-                      <HoverTip label={t("common.button.delete")}>
-                        <ActionIcon
-                          color="red"
-                          variant="light"
-                          size={25}
-                          onClick={() => {
-                            modals.openConfirmModal({
-                              title: t("account.shares.modal.delete.title", {
-                                share: share.id,
-                              }),
-                              children: (
-                                <Text size="sm">
-                                  <FormattedMessage id="account.shares.modal.delete.description" />
-                                </Text>
-                              ),
-                              confirmProps: {
-                                color: "red",
-                              },
-                              labels: {
-                                confirm: t("common.button.delete"),
-                                cancel: t("common.button.cancel"),
-                              },
-                              onConfirm: () => {
-                                shareService.expire(share.id);
-                                setShares(
-                                  shares.filter((item) => item.id !== share.id),
+                            }}
+                          >
+                            <TbInfoCircle />
+                          </ActionIcon>
+                        </HoverTip>
+                        <HoverTip label={t("common.button.copy-link")}>
+                          <ActionIcon
+                            color="ink"
+                            variant="light"
+                            size={25}
+                            onClick={() => {
+                              if (window.isSecureContext) {
+                                clipboard.copy(
+                                  `${config.get("general.appUrl") !== config.get("general.appUrl", true) ? config.get("general.appUrl") : window.location.origin}/s/${share.id}`,
                                 );
-                              },
-                            });
-                          }}
-                        >
-                          <TbTrash />
-                        </ActionIcon>
-                      </HoverTip>
-                    </Group>
-                  </td>
-                </tr>
-              ))}
+                                toast.success(t("common.notify.copied-link"));
+                              } else {
+                                showShareLinkModal(
+                                  modals,
+                                  share.id,
+                                  config.get("general.appUrl"),
+                                  config.get("general.appUrl", true),
+                                );
+                              }
+                            }}
+                          >
+                            <TbLink />
+                          </ActionIcon>
+                        </HoverTip>
+                        <HoverTip label={t("common.button.delete")}>
+                          <ActionIcon
+                            color="red"
+                            variant="light"
+                            size={25}
+                            onClick={() => {
+                              modals.openConfirmModal({
+                                title: t("account.shares.modal.delete.title", {
+                                  share: share.id,
+                                }),
+                                children: (
+                                  <Text size="sm">
+                                    <FormattedMessage id="account.shares.modal.delete.description" />
+                                  </Text>
+                                ),
+                                confirmProps: {
+                                  color: "red",
+                                },
+                                labels: {
+                                  confirm: t("common.button.delete"),
+                                  cancel: t("common.button.cancel"),
+                                },
+                                onConfirm: () => {
+                                  shareService.expire(share.id);
+                                  setShares(
+                                    shares.filter(
+                                      (item) => item.id !== share.id,
+                                    ),
+                                  );
+                                },
+                              });
+                            }}
+                          >
+                            <TbTrash />
+                          </ActionIcon>
+                        </HoverTip>
+                      </Group>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </Table>
         </Box>

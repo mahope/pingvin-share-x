@@ -19,9 +19,11 @@ import * as moment from "moment";
 import { GetUser } from "src/auth/decorator/getUser.decorator";
 import { AdministratorGuard } from "src/auth/guard/isAdmin.guard";
 import { JwtGuard } from "src/auth/guard/jwt.guard";
+import { ConfigService } from "src/config/config.service";
 import { AdminShareDTO } from "./dto/adminShare.dto";
 import { CreateShareDTO } from "./dto/createShare.dto";
 import { MyShareDTO } from "./dto/myShare.dto";
+import { ReceivedShareDTO } from "./dto/receivedShare.dto";
 import { ShareDTO } from "./dto/share.dto";
 import { ShareMetaDataDTO } from "./dto/shareMetaData.dto";
 import { SharePasswordDto } from "./dto/sharePassword.dto";
@@ -30,6 +32,8 @@ import { GetShare } from "./decorator/getShare.decorator";
 import { CreateShareGuard } from "./guard/createShare.guard";
 import { ShareOwnerGuard } from "./guard/shareOwner.guard";
 import { StrictShareOwnerGuard } from "./guard/strictShareOwner.guard";
+import { RegisteredShareOwnerGuard } from "./guard/registeredShareOwner.guard";
+import { ReceivedSharesGuard } from "./guard/receivedShares.guard";
 import { ShareSecurityGuard } from "./guard/shareSecurity.guard";
 import { ShareTokenSecurity } from "./guard/shareTokenSecurity.guard";
 import { IdValidation } from "./guard/shareIdValidation.guard";
@@ -40,6 +44,7 @@ export class ShareController {
   constructor(
     private shareService: ShareService,
     private jwtService: JwtService,
+    private config: ConfigService,
   ) {}
 
   @Get("all")
@@ -56,6 +61,14 @@ export class ShareController {
     );
   }
 
+  @Get("received")
+  @UseGuards(ReceivedSharesGuard)
+  async getReceivedShares(@GetUser() user: User) {
+    return new ReceivedShareDTO().fromList(
+      await this.shareService.getReceivedShares(user.id),
+    );
+  }
+
   @Get(":id")
   @UseGuards(IdValidation, ShareSecurityGuard)
   async get(@Param("id") id: string) {
@@ -63,7 +76,7 @@ export class ShareController {
   }
 
   @Get(":id/from-owner")
-  @UseGuards(IdValidation, StrictShareOwnerGuard)
+  @UseGuards(IdValidation, RegisteredShareOwnerGuard)
   async getFromOwner(@Param("id") id: string) {
     return new ShareDTO().from(await this.shareService.get(id));
   }
@@ -133,7 +146,7 @@ export class ShareController {
   @Throttle({
     default: {
       limit: 10,
-      ttl: 60,
+      ttl: 60 * 1000,
     },
   })
   @Get("isShareIdAvailable/:id")
@@ -145,7 +158,7 @@ export class ShareController {
   @Throttle({
     default: {
       limit: 20,
-      ttl: 5 * 60,
+      ttl: 5 * 60 * 1000,
     },
   })
   @UseGuards(IdValidation, ShareTokenSecurity)

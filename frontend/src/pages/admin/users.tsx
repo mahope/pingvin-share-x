@@ -10,6 +10,7 @@ import useConfig from "../../hooks/config.hook";
 import useTranslate from "../../hooks/useTranslate.hook";
 import userService from "../../services/user.service";
 import User from "../../types/user.type";
+import { CustomPasswordPolicy } from "../../types/config.type";
 import toast from "../../utils/toast.util";
 
 const Users = () => {
@@ -19,6 +20,28 @@ const Users = () => {
   const config = useConfig();
   const modals = useModals();
   const t = useTranslate();
+
+  let minLength = 8;
+  let requireLowercase = false;
+  let requireUppercase = false;
+  let requireNumber = false;
+  let requireSpecialCharacter = false;
+
+  if (config.get("security.customPasswordPolicy")) {
+    minLength = config.get("security.minLength");
+    requireLowercase = config.get("security.requireLowercase");
+    requireUppercase = config.get("security.requireUppercase");
+    requireNumber = config.get("security.requireNumber");
+    requireSpecialCharacter = config.get("security.requireSpecialCharacter");
+  }
+
+  const customPasswordPolicy: CustomPasswordPolicy = {
+    minLength,
+    requireUppercase,
+    requireLowercase,
+    requireNumber,
+    requireSpecialCharacter,
+  };
 
   const getUsers = () => {
     setIsLoading(true);
@@ -65,7 +88,12 @@ const Users = () => {
         </Title>
         <Button
           onClick={() =>
-            showCreateUserModal(modals, config.get("smtp.enabled"), getUsers)
+            showCreateUserModal(
+              modals,
+              config.get("smtp.enabled"),
+              getUsers,
+              customPasswordPolicy,
+            )
           }
           leftIcon={<TbPlus size={20} />}
         >
@@ -78,6 +106,7 @@ const Users = () => {
         getUsers={getUsers}
         deleteUser={deleteUser}
         isLoading={isLoading}
+        customPasswordPolicy={customPasswordPolicy}
       />
       <Space h="xl" />
     </>

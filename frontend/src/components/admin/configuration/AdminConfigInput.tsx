@@ -16,13 +16,13 @@ import { TbDeviceLaptop, TbMoon, TbSun } from "react-icons/tb";
 import { FormattedMessage } from "react-intl";
 import {
   AdminConfig,
-  AdminConfigGroupedByCategory,
   UpdateConfig,
 } from "../../../types/config.type";
 import { stringToTimespan, timespanToString } from "../../../utils/date.util";
 import FileSizeInput from "../../core/FileSizeInput";
 import TimespanInput from "../../core/TimespanInput";
 import { LOCALES } from "../../../i18n/locales";
+import useTranslate from "../../../hooks/useTranslate.hook";
 
 const AdminConfigInput = ({
   configVariable,
@@ -37,6 +37,7 @@ const AdminConfigInput = ({
   updatedConfigVariables?: UpdateConfig[];
   optionalConfigVariables?: AdminConfig[];
 }) => {
+  const t = useTranslate();
   const isCustomCssConfig = configVariable.key === "appearance.customCss";
   const isThemePrimaryColorConfig =
     configVariable.key === "appearance.themePrimaryColor";
@@ -47,11 +48,19 @@ const AdminConfigInput = ({
     configVariable.key === "appearance.themeColorScheme";
   const isDefaultLanguageConfig =
     configVariable.key === "general.defaultLanguage";
+  const isUploadProgressStyleConfig =
+    configVariable.key === "appearance.uploadProgressStyle";
   const isEmailShareConfig =
-    configVariable.key === "email.enableShareEmailRecipients";
+    configVariable.key === "share.enableShareEmailRecipients";
+  const isEmailVerificationConfig =
+    configVariable.key === "security.enableEmailVerification";
+  const isDownloadNotificationConfig =
+    configVariable.key === "share.enableShareDownloadNotifications";
+  const isEnableUserRecipients =
+    configVariable.key === "share.enableUserRecipients";
   let isSmtpEnabled = false;
 
-  if (isEmailShareConfig) {
+  if (isEmailShareConfig || isEmailVerificationConfig || isDownloadNotificationConfig || isEnableUserRecipients) {
     isSmtpEnabled =
       optionalConfigVariables?.find((config) => config.key === "smtp.enabled")
         ?.value === "true";
@@ -244,6 +253,37 @@ const AdminConfigInput = ({
             value={form.values.stringValue}
             onChange={(value) => onValueChange(configVariable, value)}
           />
+        ) : isUploadProgressStyleConfig ? (
+          <Select
+            style={{
+              width: "100%",
+            }}
+            disabled={!configVariable.allowEdit}
+            data={[
+              {
+                value: "circle",
+                label: t(
+                  "admin.config.appearance.upload-progress-style.circle",
+                ),
+              },
+              {
+                value: "circle-percentage",
+                label: t(
+                  "admin.config.appearance.upload-progress-style.circle-percentage",
+                ),
+              },
+              {
+                value: "percentage-time",
+                label: t(
+                  "admin.config.appearance.upload-progress-style.percentage-time",
+                ),
+              },
+            ]}
+            value={form.values.stringValue}
+            placeholder={configVariable.defaultValue}
+            onChange={(value) => onValueChange(configVariable, value ?? "")}
+            allowDeselect={false}
+          />
         ) : (
           <TextInput
             style={{
@@ -287,24 +327,26 @@ const AdminConfigInput = ({
           w={201}
         />
       )}
-      {configVariable.type == "boolean" && isEmailShareConfig && (
-        <>
-          <Switch
-            disabled={!isSmtpEnabled}
-            {...form.getInputProps("booleanValue", { type: "checkbox" })}
-            onChange={(e) => onValueChange(configVariable, e.target.checked)}
-          />
-        </>
-      )}
-      {configVariable.type == "boolean" && !isEmailShareConfig && (
-        <>
-          <Switch
-            disabled={!configVariable.allowEdit}
-            {...form.getInputProps("booleanValue", { type: "checkbox" })}
-            onChange={(e) => onValueChange(configVariable, e.target.checked)}
-          />
-        </>
-      )}
+      {configVariable.type == "boolean" &&
+        (isEmailShareConfig || isEmailVerificationConfig || isDownloadNotificationConfig || isEnableUserRecipients) && (
+          <>
+            <Switch
+              disabled={!configVariable.allowEdit || !isSmtpEnabled}
+              {...form.getInputProps("booleanValue", { type: "checkbox" })}
+              onChange={(e) => onValueChange(configVariable, e.target.checked)}
+            />
+          </>
+        )}
+      {configVariable.type == "boolean" &&
+        !(isEmailShareConfig || isEmailVerificationConfig || isDownloadNotificationConfig || isEnableUserRecipients) && (
+          <>
+            <Switch
+              disabled={!configVariable.allowEdit}
+              {...form.getInputProps("booleanValue", { type: "checkbox" })}
+              onChange={(e) => onValueChange(configVariable, e.target.checked)}
+            />
+          </>
+        )}
       {configVariable.type == "timespan" && (
         <TimespanInput
           value={stringToTimespan(configVariable.value)}

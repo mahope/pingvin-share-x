@@ -24,13 +24,25 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set image tags
+        id: tags
+        run: |
+          {
+            echo "tags<<EOF"
+            if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+              echo "ghcr.io/mahope/pingvin-share-x:filer"
+              echo "ghcr.io/mahope/pingvin-share-x:filer-${{ github.run_number }}"
+            else
+              echo "ghcr.io/mahope/pingvin-share-x:filer-v2-${{ github.run_number }}"
+            fi
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
-          tags: |
-            ghcr.io/mahope/pingvin-share-x:filer
-            ghcr.io/mahope/pingvin-share-x:filer-${{ github.run_number }}
+          tags: ${{ steps.tags.outputs.tags }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

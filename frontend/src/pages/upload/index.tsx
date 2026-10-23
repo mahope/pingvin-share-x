@@ -1,9 +1,19 @@
-import { Button, Group } from "@mantine/core";
+import {
+  Button,
+  Center,
+  Group,
+  Space,
+  Stack,
+  Text,
+  Title,
+} from "@mantine/core";
 import { useModals } from "@mantine/modals";
 import { cleanNotifications } from "@mantine/notifications";
 import { AxiosError } from "axios";
 import pLimit from "p-limit";
-import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { TbShieldLock } from "react-icons/tb";
 import { FormattedMessage } from "react-intl";
 import Meta from "../../components/Meta";
 import Dropzone from "../../components/upload/Dropzone";
@@ -19,6 +29,10 @@ import { FileUpload } from "../../types/File.type";
 import { CreateShare, Share } from "../../types/share.type";
 import toast from "../../utils/toast.util";
 import { useRouter } from "next/router";
+import {
+  getNormalizedFileName,
+  filterDuplicateFiles,
+} from "../../utils/file.util";
 
 const promiseLimit = pLimit(3);
 let errorToastShown = false;
@@ -49,7 +63,14 @@ const Upload = ({
 
   const chunkSize = useRef(parseInt(config.get("share.chunkSize")));
 
-  maxShareSize ??= parseInt(config.get("share.maxSize"));
+  maxShareSize ??= user?.shareSizeLimit
+    ? parseInt(user.shareSizeLimit)
+    : parseInt(config.get("share.maxSize"));
+
+  const currentFilesSize = useMemo(() => {
+    return files.reduce((acc, file) => acc + file.size, 0);
+  }, [files]);
+
   const autoOpenCreateUploadModal = config.get("share.autoOpenShareModal");
 
   const uploadFiles = async (share: CreateShare, files: FileUpload[]) => {
@@ -102,10 +123,23 @@ const Upload = ({
                 blob,
                 {
                   id: fileId,
-                  name: file.name,
+                  name: getNormalizedFileName(file),
                 },
                 chunkIndex,
                 chunks,
+                (progressEvent) => {
+                  if (progressEvent.total && file.size > 0) {
+                    const chunkProgress =
+                      progressEvent.loaded / progressEvent.total;
+                    const uploadedBytesBeforeThisChunk =
+                      chunkIndex * chunkSize.current;
+                    const uploadedBytesInThisChunk = blob.size * chunkProgress;
+                    const totalUploaded =
+                      uploadedBytesBeforeThisChunk + uploadedBytesInThisChunk;
+                    const overallPercent = (totalUploaded / file.size) * 100;
+                    setFileProgress(Math.min(overallPercent, 99.9));
+                  }
+                },
               )
               .then((response) => {
                 fileId = response.id;
@@ -145,10 +179,13 @@ const Upload = ({
         appUrl: config.get("general.appUrl"),
         defaultAppUrl: config.get("general.appUrl", true),
         allowUnauthenticatedShares: config.get(
-          "share.allowUnauthenticatedShares",
+          "security.allowUnauthenticatedShares",
         ),
-        enableEmailRecepients: config.get("email.enableShareEmailRecipients"),
-        maxExpiration: config.get("share.maxExpiration"),
+        enableEmailRecepients: config.get("share.enableShareEmailRecipients"),
+        enableUserRecipients: config.get("share.enableUserRecipients"),
+        maxExpiration: user?.isAdmin
+          ? { value: 0, unit: "days" }
+          : config.get("share.maxExpiration"),
         defaultExpiration: config.get("share.defaultExpiration"),
         shareIdLength: config.get("share.shareIdLength"),
         simplified,
@@ -158,12 +195,19 @@ const Upload = ({
     );
   };
 
-  const handleDropzoneFilesChanged = (files: FileUpload[]) => {
+  const handleDropzoneFilesChanged = (newFiles: FileUpload[]) => {
+    const filtered = filterDuplicateFiles(newFiles, files, (normalizedName) =>
+      toast.error(
+        t("upload.notify.duplicate-skipped", { name: normalizedName }),
+      ),
+    );
+    if (filtered.length === 0) return;
+
     if (autoOpenCreateUploadModal) {
-      setFiles(files);
-      showCreateUploadModalCallback(files);
+      setFiles(filtered);
+      showCreateUploadModalCallback(filtered);
     } else {
-      setFiles((oldArr) => [...oldArr, ...files]);
+      setFiles((oldArr) => [...oldArr, ...filtered]);
     }
   };
 
@@ -198,11 +242,21 @@ const Upload = ({
         const fileUpload = file as FileUpload;
         fileUpload.uploadingProgress = 0;
 
+        const filtered = filterDuplicateFiles(
+          [fileUpload],
+          files,
+          (normalizedName) =>
+            toast.error(
+              t("upload.notify.duplicate-skipped", { name: normalizedName }),
+            ),
+        );
+        if (filtered.length === 0) return;
+
         if (autoOpenCreateUploadModal) {
-          setFiles([fileUpload]);
-          showCreateUploadModalCallback([fileUpload]);
+          setFiles(filtered);
+          showCreateUploadModalCallback(filtered);
         } else {
-          setFiles((oldArr) => [...oldArr, fileUpload]);
+          setFiles((oldArr) => [...oldArr, ...filtered]);
         }
       }
     };
@@ -258,6 +312,29 @@ const Upload = ({
     }
   }, [files]);
 
+  if (user && user.allowShare === false && !isReverseShare) {
+    return (
+      <>
+        <Meta title={t("upload.title")} />
+        <Center style={{ height: "70vh" }}>
+          <Stack align="center" spacing={10}>
+            <TbShieldLock size={48} color="gray" />
+            <Title order={3}>
+              <FormattedMessage id="upload.error.not-allowed.title" />
+            </Title>
+            <Text color="dimmed" align="center">
+              <FormattedMessage id="upload.error.not-allowed.description" />
+            </Text>
+            <Space h={5} />
+            <Button component={Link} href="/account/shares" variant="light">
+              <FormattedMessage id="account.shares.title" />
+            </Button>
+          </Stack>
+        </Center>
+      </>
+    );
+  }
+
   return (
     <>
       <Meta title={t("upload.title")} />
@@ -277,6 +354,7 @@ const Upload = ({
             : undefined
         }
         maxShareSize={maxShareSize}
+        currentFilesSize={currentFilesSize}
         onFilesChanged={handleDropzoneFilesChanged}
         isUploading={isUploading}
       />

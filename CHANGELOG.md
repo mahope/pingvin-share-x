@@ -1,3 +1,357 @@
+## [2.1.0-beta.0](https://github.com/smp46/pingvin-share-x/compare/v2.0.0...v2.1.0-beta.0) (2026-10-19)
+
+### Features
+
+* **lang:** support Norwegian Bokmal & Nynorsk ([#247](https://github.com/smp46/pingvin-share-x/issues/247)) ([81204f4](https://github.com/smp46/pingvin-share-x/commit/81204f4af77689d6986aaccf72e2a950f5d55f3b)), closes [#241](https://github.com/smp46/pingvin-share-x/issues/241)
+* **oidc:** allowed alternative login hostnames ([#240](https://github.com/smp46/pingvin-share-x/issues/240)) ([e2a264e](https://github.com/smp46/pingvin-share-x/commit/e2a264e2ed61b6c919c9bb2cbe70eabfce65cfdc))
+
+### Bug Fixes
+
+* **admin:** allowEdits consistently for email related configs ([#259](https://github.com/smp46/pingvin-share-x/issues/259)) ([f357005](https://github.com/smp46/pingvin-share-x/commit/f3570051e42798dc900c2587323d04a2bce15f12))
+* **footer:** make 'powered by' text translatable ([#245](https://github.com/smp46/pingvin-share-x/issues/245)) ([72f327f](https://github.com/smp46/pingvin-share-x/commit/72f327fc0baead06f5cd79cd5534eda6706e47a8))
+* never ignore custom password policy ([#258](https://github.com/smp46/pingvin-share-x/issues/258)) ([938df67](https://github.com/smp46/pingvin-share-x/commit/938df67d8609f63f7077d13670041a3c3829065a))
+* reverse share access ([b6a5e41](https://github.com/smp46/pingvin-share-x/commit/b6a5e41844c5cab126bfd8412f98f97377bc23d5))
+* **shares:** wrap maxViews handling in prisma transaction ([#265](https://github.com/smp46/pingvin-share-x/issues/265)) ([7525112](https://github.com/smp46/pingvin-share-x/commit/75251122a10c8acd2639c5b352494cede5337a98))
+
+## [2.0.0](https://github.com/smp46/pingvin-share-x/compare/v1.22.1...v2.0.0) (2026-10-03)
+
+### ⚠ BREAKING CHANGES
+
+* **s3:** direct uploads & downloads with presigned urls (#181)
+
+### Features
+
+* add display name field to user accounts ([#212](https://github.com/smp46/pingvin-share-x/issues/212)) ([44d53de](https://github.com/smp46/pingvin-share-x/commit/44d53de2307b51d3f671b389fbac3c204e679a64))
+* Added option to toggle auth button in share/upload (reverse share) pages for unauthenticated users ([#216](https://github.com/smp46/pingvin-share-x/issues/216)) ([131cb45](https://github.com/smp46/pingvin-share-x/commit/131cb45807b7a92eb3b167da2f7b465a23611ce5))
+* **config:** link to cors changes needed on s3 page ([66592ff](https://github.com/smp46/pingvin-share-x/commit/66592ff9aa33589491dc2d85054ff88ee9f561be))
+* customisable password policy ([#189](https://github.com/smp46/pingvin-share-x/issues/189)) ([a0e803f](https://github.com/smp46/pingvin-share-x/commit/a0e803f68b004ab6793e4348f132c879c8ba42d3))
+* improve dropzone upload guidance and action verbiage ([#210](https://github.com/smp46/pingvin-share-x/issues/210)) ([7f39fff](https://github.com/smp46/pingvin-share-x/commit/7f39fff4632ee5ac0e2ced1c2154a5e3976639a8))
+* per user feature permissions ([#205](https://github.com/smp46/pingvin-share-x/issues/205)) ([f901171](https://github.com/smp46/pingvin-share-x/commit/f9011715eaa73045c21d54f4c0de62d942c11027))
+* reorganise configuration menu ([#194](https://github.com/smp46/pingvin-share-x/issues/194)) ([e9d2261](https://github.com/smp46/pingvin-share-x/commit/e9d22618c67067306b05bf01e268a4289c6fdfb0))
+* **s3:** direct uploads & downloads with presigned urls ([#181](https://github.com/smp46/pingvin-share-x/issues/181)) ([25f0394](https://github.com/smp46/pingvin-share-x/commit/25f039436a683f74e9497e63f58f4bc76b4c6565)), closes [#180](https://github.com/smp46/pingvin-share-x/issues/180)
+* **storage:** add per-user storage quotas ([#133](https://github.com/smp46/pingvin-share-x/issues/133)) ([c847a45](https://github.com/smp46/pingvin-share-x/commit/c847a45b0541b91078283e8b7d9eed13dbb10b38))
+* support http range requests ([#196](https://github.com/smp46/pingvin-share-x/issues/196)) ([a618051](https://github.com/smp46/pingvin-share-x/commit/a618051033d4b4ea275fc2f6a966f755f7b2caab))
+
+### Bug Fixes
+
+* **admin_notices:** if s3 disabled on first run, dismiss notice ([#230](https://github.com/smp46/pingvin-share-x/issues/230)) ([946ae8e](https://github.com/smp46/pingvin-share-x/commit/946ae8eb80e0b4b1b3d66b43eef542ba0127b374))
+* **auth:** wrap admin check in prisma transaction ([930368a](https://github.com/smp46/pingvin-share-x/commit/930368a824924f960983290f8b4616e438cce1a6))
+* **backend:** check fileid & shareid before file removal ([0ab355e](https://github.com/smp46/pingvin-share-x/commit/0ab355e66c221075dd6f8e8ff8b27e1c05b0be62))
+* **config:** stop security & access wrapping on navbar ([03ccdd5](https://github.com/smp46/pingvin-share-x/commit/03ccdd5e1d67d173f7b2289c35853c484e7ce70a))
+* **config:** support legacy config.yaml ([#233](https://github.com/smp46/pingvin-share-x/issues/233)) ([8801a5a](https://github.com/smp46/pingvin-share-x/commit/8801a5aaa6719eb70782e90e883b275fea1ccb7e))
+* **createShare:** enforce 512 char description limit on frontend ([#221](https://github.com/smp46/pingvin-share-x/issues/221)) ([9d63bb2](https://github.com/smp46/pingvin-share-x/commit/9d63bb2b534947f97c5f51e8c8697053392621c5))
+* **download_all:** smarter zip logic & error handling ([#226](https://github.com/smp46/pingvin-share-x/issues/226)) ([0bd2aa1](https://github.com/smp46/pingvin-share-x/commit/0bd2aa1453ce13920a7e4b8bf20010ad2fe32036))
+* **dropzone:** remove transparency from folder button in dark mode ([#186](https://github.com/smp46/pingvin-share-x/issues/186)) ([8b640b9](https://github.com/smp46/pingvin-share-x/commit/8b640b9bb64f6dccd37af13430db8da7c66e2255))
+* **filePreview:** better handle original file link ([#192](https://github.com/smp46/pingvin-share-x/issues/192)) ([85e6bb7](https://github.com/smp46/pingvin-share-x/commit/85e6bb7b1452a182fe6752500f73a99add6cba86))
+* **frontend:** add missing defaultConfig value ([2ad6bac](https://github.com/smp46/pingvin-share-x/commit/2ad6bac24416ae69c850a5233e699dc846ed2c12))
+* **frontend:** improve en-US source strings for grammar & readability ([#211](https://github.com/smp46/pingvin-share-x/issues/211)) ([ac8c6d8](https://github.com/smp46/pingvin-share-x/commit/ac8c6d8b2dd641745e3dbf409eb05926b6d35bd6))
+* missing guard ([205fa0e](https://github.com/smp46/pingvin-share-x/commit/205fa0e6d8efd83dde82efee7a5ac39443316af1))
+* **nextjs:** exclude runtime caching for api rotues ([#228](https://github.com/smp46/pingvin-share-x/issues/228)) ([fed5150](https://github.com/smp46/pingvin-share-x/commit/fed51508f61f80b9af97d5dc066d05055ce84925))
+* **oauth:** revoke admin when OIDC role is missing ([#218](https://github.com/smp46/pingvin-share-x/issues/218)) ([1fcd219](https://github.com/smp46/pingvin-share-x/commit/1fcd219f2d4c1b44186252effd38fbd3ef3b99f5))
+* **oidc:** better validate & handle user provided config ([#225](https://github.com/smp46/pingvin-share-x/issues/225)) ([2ee90b5](https://github.com/smp46/pingvin-share-x/commit/2ee90b5f598a85b41570b9a5178a724619f3eced))
+* **receivedShares:** add missing DTO ([3bb56c3](https://github.com/smp46/pingvin-share-x/commit/3bb56c3d810f240489b8e37ccce9b964c3779c8b))
+* **s3:** pregenerate file id, resolves multi-chunk uploads ([#197](https://github.com/smp46/pingvin-share-x/issues/197)) ([dcb3cfc](https://github.com/smp46/pingvin-share-x/commit/dcb3cfcb03a8c6891e2d6ed688f393a7f8043612))
+* **upload:** retry stalled transfers ([#203](https://github.com/smp46/pingvin-share-x/issues/203)) ([8e2ab0c](https://github.com/smp46/pingvin-share-x/commit/8e2ab0c95deda5e61008ab7de54825370fcf7565))
+
+## [2.0.0-beta.4](https://github.com/smp46/pingvin-share-x/compare/v1.22.1...v2.0.0-beta.4) (2026-10-03)
+
+### Bug Fixes
+
+* **auth:** wrap admin check in prisma transaction ([930368a](https://github.com/smp46/pingvin-share-x/commit/930368a824924f960983290f8b4616e438cce1a6))
+* **config:** support legacy config.yaml ([#233](https://github.com/smp46/pingvin-share-x/issues/233)) ([8801a5a](https://github.com/smp46/pingvin-share-x/commit/8801a5aaa6719eb70782e90e883b275fea1ccb7e))
+
+## 2.0.0-beta.3 (2026-10-01)
+
+### Features
+
+* add display name field to user accounts ([#212](https://github.com/smp46/pingvin-share-x/issues/212)) ([44d53de](https://github.com/smp46/pingvin-share-x/commit/44d53de2307b51d3f671b389fbac3c204e679a64))
+* Added option to toggle auth button in share/upload (reverse share) pages for unauthenticated users ([#216](https://github.com/smp46/pingvin-share-x/issues/216)) ([131cb45](https://github.com/smp46/pingvin-share-x/commit/131cb45807b7a92eb3b167da2f7b465a23611ce5))
+* improve dropzone upload guidance and action verbiage ([#210](https://github.com/smp46/pingvin-share-x/issues/210)) ([7f39fff](https://github.com/smp46/pingvin-share-x/commit/7f39fff4632ee5ac0e2ced1c2154a5e3976639a8))
+
+### Bug Fixes
+
+* **admin_notices:** if s3 disabled on first run, dismiss notice ([#230](https://github.com/smp46/pingvin-share-x/issues/230)) ([946ae8e](https://github.com/smp46/pingvin-share-x/commit/946ae8eb80e0b4b1b3d66b43eef542ba0127b374))
+* **backend:** check fileid & shareid before file removal ([0ab355e](https://github.com/smp46/pingvin-share-x/commit/0ab355e66c221075dd6f8e8ff8b27e1c05b0be62))
+* **config:** stop security & access wrapping on navbar ([03ccdd5](https://github.com/smp46/pingvin-share-x/commit/03ccdd5e1d67d173f7b2289c35853c484e7ce70a))
+* **createShare:** enforce 512 char description limit on frontend ([#221](https://github.com/smp46/pingvin-share-x/issues/221)) ([9d63bb2](https://github.com/smp46/pingvin-share-x/commit/9d63bb2b534947f97c5f51e8c8697053392621c5))
+* **download_all:** smarter zip logic & error handling ([#226](https://github.com/smp46/pingvin-share-x/issues/226)) ([0bd2aa1](https://github.com/smp46/pingvin-share-x/commit/0bd2aa1453ce13920a7e4b8bf20010ad2fe32036))
+* **frontend:** add missing defaultConfig value ([2ad6bac](https://github.com/smp46/pingvin-share-x/commit/2ad6bac24416ae69c850a5233e699dc846ed2c12))
+* **nextjs:** exclude runtime caching for api rotues ([#228](https://github.com/smp46/pingvin-share-x/issues/228)) ([fed5150](https://github.com/smp46/pingvin-share-x/commit/fed51508f61f80b9af97d5dc066d05055ce84925))
+* **oauth:** revoke admin when OIDC role is missing ([#218](https://github.com/smp46/pingvin-share-x/issues/218)) ([1fcd219](https://github.com/smp46/pingvin-share-x/commit/1fcd219f2d4c1b44186252effd38fbd3ef3b99f5))
+* **oidc:** better validate & handle user provided config ([#225](https://github.com/smp46/pingvin-share-x/issues/225)) ([2ee90b5](https://github.com/smp46/pingvin-share-x/commit/2ee90b5f598a85b41570b9a5178a724619f3eced))
+
+## 2.0.0-beta.2 (2026-09-16)
+
+### Features
+
+* per user feature permissions ([#205](https://github.com/smp46/pingvin-share-x/issues/205)) ([f901171](https://github.com/smp46/pingvin-share-x/commit/f9011715eaa73045c21d54f4c0de62d942c11027))
+* support http range requests ([#196](https://github.com/smp46/pingvin-share-x/issues/196)) ([a618051](https://github.com/smp46/pingvin-share-x/commit/a618051033d4b4ea275fc2f6a966f755f7b2caab))
+
+### Bug Fixes
+
+* **frontend:** improve en-US source strings for grammar & readability ([#211](https://github.com/smp46/pingvin-share-x/issues/211)) ([ac8c6d8](https://github.com/smp46/pingvin-share-x/commit/ac8c6d8b2dd641745e3dbf409eb05926b6d35bd6))
+* missing guard ([205fa0e](https://github.com/smp46/pingvin-share-x/commit/205fa0e6d8efd83dde82efee7a5ac39443316af1))
+* **receivedShares:** add missing DTO ([3bb56c3](https://github.com/smp46/pingvin-share-x/commit/3bb56c3d810f240489b8e37ccce9b964c3779c8b))
+* **upload:** retry stalled transfers ([#203](https://github.com/smp46/pingvin-share-x/issues/203)) ([8e2ab0c](https://github.com/smp46/pingvin-share-x/commit/8e2ab0c95deda5e61008ab7de54825370fcf7565))
+
+## 2.0.0-beta.1 (2026-08-25)
+
+### Features
+
+* customisable password policy ([#189](https://github.com/smp46/pingvin-share-x/issues/189)) ([a0e803f](https://github.com/smp46/pingvin-share-x/commit/a0e803f68b004ab6793e4348f132c879c8ba42d3))
+* reorganise configuration menu ([#194](https://github.com/smp46/pingvin-share-x/issues/194)) ([e9d2261](https://github.com/smp46/pingvin-share-x/commit/e9d22618c67067306b05bf01e268a4289c6fdfb0))
+
+### Bug Fixes
+
+* **filePreview:** better handle original file link ([#192](https://github.com/smp46/pingvin-share-x/issues/192)) ([85e6bb7](https://github.com/smp46/pingvin-share-x/commit/85e6bb7b1452a182fe6752500f73a99add6cba86))
+* **s3:** pregenerate file id, resolves multi-chunk uploads ([#197](https://github.com/smp46/pingvin-share-x/issues/197)) ([dcb3cfc](https://github.com/smp46/pingvin-share-x/commit/dcb3cfcb03a8c6891e2d6ed688f393a7f8043612))
+
+## 2.0.0-beta.0 (2026-08-18)
+
+### ⚠ BREAKING CHANGES
+
+* **s3:** direct uploads & downloads with presigned urls (#181)
+
+### Features
+
+* **config:** link to cors changes needed on s3 page ([66592ff](https://github.com/smp46/pingvin-share-x/commit/66592ff9aa33589491dc2d85054ff88ee9f561be))
+* **s3:** direct uploads & downloads with presigned urls ([#181](https://github.com/smp46/pingvin-share-x/issues/181)) ([25f0394](https://github.com/smp46/pingvin-share-x/commit/25f039436a683f74e9497e63f58f4bc76b4c6565)), closes [#180](https://github.com/smp46/pingvin-share-x/issues/180)
+* **storage:** add per-user storage quotas ([#133](https://github.com/smp46/pingvin-share-x/issues/133)) ([c847a45](https://github.com/smp46/pingvin-share-x/commit/c847a45b0541b91078283e8b7d9eed13dbb10b38))
+
+### Bug Fixes
+
+* **dropzone:** remove transparency from folder button in dark mode ([#186](https://github.com/smp46/pingvin-share-x/issues/186)) ([8b640b9](https://github.com/smp46/pingvin-share-x/commit/8b640b9bb64f6dccd37af13430db8da7c66e2255))
+
+## 1.22.1-beta.0 (2026-08-08)
+
+## [2.0.0-beta.3](https://github.com/smp46/pingvin-share-x/compare/v1.22.1...v2.0.0-beta.3) (2026-10-01)
+
+### Features
+
+* add display name field to user accounts ([#212](https://github.com/smp46/pingvin-share-x/issues/212)) ([44d53de](https://github.com/smp46/pingvin-share-x/commit/44d53de2307b51d3f671b389fbac3c204e679a64))
+* Added option to toggle auth button in share/upload (reverse share) pages for unauthenticated users ([#216](https://github.com/smp46/pingvin-share-x/issues/216)) ([131cb45](https://github.com/smp46/pingvin-share-x/commit/131cb45807b7a92eb3b167da2f7b465a23611ce5))
+* improve dropzone upload guidance and action verbiage ([#210](https://github.com/smp46/pingvin-share-x/issues/210)) ([7f39fff](https://github.com/smp46/pingvin-share-x/commit/7f39fff4632ee5ac0e2ced1c2154a5e3976639a8))
+
+### Bug Fixes
+
+* **admin_notices:** if s3 disabled on first run, dismiss notice ([#230](https://github.com/smp46/pingvin-share-x/issues/230)) ([946ae8e](https://github.com/smp46/pingvin-share-x/commit/946ae8eb80e0b4b1b3d66b43eef542ba0127b374))
+* **backend:** check fileid & shareid before file removal ([0ab355e](https://github.com/smp46/pingvin-share-x/commit/0ab355e66c221075dd6f8e8ff8b27e1c05b0be62))
+* **config:** stop security & access wrapping on navbar ([03ccdd5](https://github.com/smp46/pingvin-share-x/commit/03ccdd5e1d67d173f7b2289c35853c484e7ce70a))
+* **createShare:** enforce 512 char description limit on frontend ([#221](https://github.com/smp46/pingvin-share-x/issues/221)) ([9d63bb2](https://github.com/smp46/pingvin-share-x/commit/9d63bb2b534947f97c5f51e8c8697053392621c5))
+* **download_all:** smarter zip logic & error handling ([#226](https://github.com/smp46/pingvin-share-x/issues/226)) ([0bd2aa1](https://github.com/smp46/pingvin-share-x/commit/0bd2aa1453ce13920a7e4b8bf20010ad2fe32036))
+* **frontend:** add missing defaultConfig value ([2ad6bac](https://github.com/smp46/pingvin-share-x/commit/2ad6bac24416ae69c850a5233e699dc846ed2c12))
+* **nextjs:** exclude runtime caching for api rotues ([#228](https://github.com/smp46/pingvin-share-x/issues/228)) ([fed5150](https://github.com/smp46/pingvin-share-x/commit/fed51508f61f80b9af97d5dc066d05055ce84925))
+* **oauth:** revoke admin when OIDC role is missing ([#218](https://github.com/smp46/pingvin-share-x/issues/218)) ([1fcd219](https://github.com/smp46/pingvin-share-x/commit/1fcd219f2d4c1b44186252effd38fbd3ef3b99f5))
+* **oidc:** better validate & handle user provided config ([#225](https://github.com/smp46/pingvin-share-x/issues/225)) ([2ee90b5](https://github.com/smp46/pingvin-share-x/commit/2ee90b5f598a85b41570b9a5178a724619f3eced))
+
+## 2.0.0-beta.2 (2026-09-16)
+
+### Features
+
+* per user feature permissions ([#205](https://github.com/smp46/pingvin-share-x/issues/205)) ([f901171](https://github.com/smp46/pingvin-share-x/commit/f9011715eaa73045c21d54f4c0de62d942c11027))
+* support http range requests ([#196](https://github.com/smp46/pingvin-share-x/issues/196)) ([a618051](https://github.com/smp46/pingvin-share-x/commit/a618051033d4b4ea275fc2f6a966f755f7b2caab))
+
+### Bug Fixes
+
+* **frontend:** improve en-US source strings for grammar & readability ([#211](https://github.com/smp46/pingvin-share-x/issues/211)) ([ac8c6d8](https://github.com/smp46/pingvin-share-x/commit/ac8c6d8b2dd641745e3dbf409eb05926b6d35bd6))
+* missing guard ([205fa0e](https://github.com/smp46/pingvin-share-x/commit/205fa0e6d8efd83dde82efee7a5ac39443316af1))
+* **receivedShares:** add missing DTO ([3bb56c3](https://github.com/smp46/pingvin-share-x/commit/3bb56c3d810f240489b8e37ccce9b964c3779c8b))
+* **upload:** retry stalled transfers ([#203](https://github.com/smp46/pingvin-share-x/issues/203)) ([8e2ab0c](https://github.com/smp46/pingvin-share-x/commit/8e2ab0c95deda5e61008ab7de54825370fcf7565))
+
+## 2.0.0-beta.1 (2026-08-25)
+
+### Features
+
+* customisable password policy ([#189](https://github.com/smp46/pingvin-share-x/issues/189)) ([a0e803f](https://github.com/smp46/pingvin-share-x/commit/a0e803f68b004ab6793e4348f132c879c8ba42d3))
+* reorganise configuration menu ([#194](https://github.com/smp46/pingvin-share-x/issues/194)) ([e9d2261](https://github.com/smp46/pingvin-share-x/commit/e9d22618c67067306b05bf01e268a4289c6fdfb0))
+
+### Bug Fixes
+
+* **filePreview:** better handle original file link ([#192](https://github.com/smp46/pingvin-share-x/issues/192)) ([85e6bb7](https://github.com/smp46/pingvin-share-x/commit/85e6bb7b1452a182fe6752500f73a99add6cba86))
+* **s3:** pregenerate file id, resolves multi-chunk uploads ([#197](https://github.com/smp46/pingvin-share-x/issues/197)) ([dcb3cfc](https://github.com/smp46/pingvin-share-x/commit/dcb3cfcb03a8c6891e2d6ed688f393a7f8043612))
+
+## 2.0.0-beta.0 (2026-08-18)
+
+### ⚠ BREAKING CHANGES
+
+* **s3:** direct uploads & downloads with presigned urls (#181)
+
+### Features
+
+* **config:** link to cors changes needed on s3 page ([66592ff](https://github.com/smp46/pingvin-share-x/commit/66592ff9aa33589491dc2d85054ff88ee9f561be))
+* **s3:** direct uploads & downloads with presigned urls ([#181](https://github.com/smp46/pingvin-share-x/issues/181)) ([25f0394](https://github.com/smp46/pingvin-share-x/commit/25f039436a683f74e9497e63f58f4bc76b4c6565)), closes [#180](https://github.com/smp46/pingvin-share-x/issues/180)
+* **storage:** add per-user storage quotas ([#133](https://github.com/smp46/pingvin-share-x/issues/133)) ([c847a45](https://github.com/smp46/pingvin-share-x/commit/c847a45b0541b91078283e8b7d9eed13dbb10b38))
+
+### Bug Fixes
+
+* **dropzone:** remove transparency from folder button in dark mode ([#186](https://github.com/smp46/pingvin-share-x/issues/186)) ([8b640b9](https://github.com/smp46/pingvin-share-x/commit/8b640b9bb64f6dccd37af13430db8da7c66e2255))
+
+## 1.22.1-beta.0 (2026-08-08)
+
+## [2.0.0-beta.2](https://github.com/smp46/pingvin-share-x/compare/v1.22.1...v2.0.0-beta.2) (2026-09-16)
+
+### Features
+
+* per user feature permissions ([#205](https://github.com/smp46/pingvin-share-x/issues/205)) ([f901171](https://github.com/smp46/pingvin-share-x/commit/f9011715eaa73045c21d54f4c0de62d942c11027))
+* support http range requests ([#196](https://github.com/smp46/pingvin-share-x/issues/196)) ([a618051](https://github.com/smp46/pingvin-share-x/commit/a618051033d4b4ea275fc2f6a966f755f7b2caab))
+
+### Bug Fixes
+
+* **frontend:** improve en-US source strings for grammar & readability ([#211](https://github.com/smp46/pingvin-share-x/issues/211)) ([ac8c6d8](https://github.com/smp46/pingvin-share-x/commit/ac8c6d8b2dd641745e3dbf409eb05926b6d35bd6))
+* missing guard ([205fa0e](https://github.com/smp46/pingvin-share-x/commit/205fa0e6d8efd83dde82efee7a5ac39443316af1))
+* **receivedShares:** add missing DTO ([3bb56c3](https://github.com/smp46/pingvin-share-x/commit/3bb56c3d810f240489b8e37ccce9b964c3779c8b))
+* **upload:** retry stalled transfers ([#203](https://github.com/smp46/pingvin-share-x/issues/203)) ([8e2ab0c](https://github.com/smp46/pingvin-share-x/commit/8e2ab0c95deda5e61008ab7de54825370fcf7565))
+
+## 2.0.0-beta.1 (2026-08-25)
+
+### Features
+
+* customisable password policy ([#189](https://github.com/smp46/pingvin-share-x/issues/189)) ([a0e803f](https://github.com/smp46/pingvin-share-x/commit/a0e803f68b004ab6793e4348f132c879c8ba42d3))
+* reorganise configuration menu ([#194](https://github.com/smp46/pingvin-share-x/issues/194)) ([e9d2261](https://github.com/smp46/pingvin-share-x/commit/e9d22618c67067306b05bf01e268a4289c6fdfb0))
+
+### Bug Fixes
+
+* **filePreview:** better handle original file link ([#192](https://github.com/smp46/pingvin-share-x/issues/192)) ([85e6bb7](https://github.com/smp46/pingvin-share-x/commit/85e6bb7b1452a182fe6752500f73a99add6cba86))
+* **s3:** pregenerate file id, resolves multi-chunk uploads ([#197](https://github.com/smp46/pingvin-share-x/issues/197)) ([dcb3cfc](https://github.com/smp46/pingvin-share-x/commit/dcb3cfcb03a8c6891e2d6ed688f393a7f8043612))
+
+## 2.0.0-beta.0 (2026-08-18)
+
+### ⚠ BREAKING CHANGES
+
+* **s3:** direct uploads & downloads with presigned urls (#181)
+
+### Features
+
+* **config:** link to cors changes needed on s3 page ([66592ff](https://github.com/smp46/pingvin-share-x/commit/66592ff9aa33589491dc2d85054ff88ee9f561be))
+* **s3:** direct uploads & downloads with presigned urls ([#181](https://github.com/smp46/pingvin-share-x/issues/181)) ([25f0394](https://github.com/smp46/pingvin-share-x/commit/25f039436a683f74e9497e63f58f4bc76b4c6565)), closes [#180](https://github.com/smp46/pingvin-share-x/issues/180)
+* **storage:** add per-user storage quotas ([#133](https://github.com/smp46/pingvin-share-x/issues/133)) ([c847a45](https://github.com/smp46/pingvin-share-x/commit/c847a45b0541b91078283e8b7d9eed13dbb10b38))
+
+### Bug Fixes
+
+* **dropzone:** remove transparency from folder button in dark mode ([#186](https://github.com/smp46/pingvin-share-x/issues/186)) ([8b640b9](https://github.com/smp46/pingvin-share-x/commit/8b640b9bb64f6dccd37af13430db8da7c66e2255))
+
+## 1.22.1-beta.0 (2026-08-08)
+
+## [2.0.0-beta.1](https://github.com/smp46/pingvin-share-x/compare/v1.22.1...v2.0.0-beta.1) (2026-08-25)
+
+### Features
+
+* customisable password policy ([#189](https://github.com/smp46/pingvin-share-x/issues/189)) ([a0e803f](https://github.com/smp46/pingvin-share-x/commit/a0e803f68b004ab6793e4348f132c879c8ba42d3))
+* reorganise configuration menu ([#194](https://github.com/smp46/pingvin-share-x/issues/194)) ([e9d2261](https://github.com/smp46/pingvin-share-x/commit/e9d22618c67067306b05bf01e268a4289c6fdfb0))
+
+### Bug Fixes
+
+* **filePreview:** better handle original file link ([#192](https://github.com/smp46/pingvin-share-x/issues/192)) ([85e6bb7](https://github.com/smp46/pingvin-share-x/commit/85e6bb7b1452a182fe6752500f73a99add6cba86))
+* **s3:** pregenerate file id, resolves multi-chunk uploads ([#197](https://github.com/smp46/pingvin-share-x/issues/197)) ([dcb3cfc](https://github.com/smp46/pingvin-share-x/commit/dcb3cfcb03a8c6891e2d6ed688f393a7f8043612))
+
+## 2.0.0-beta.0 (2026-08-18)
+
+### ⚠ BREAKING CHANGES
+
+* **s3:** direct uploads & downloads with presigned urls (#181)
+
+### Features
+
+* **config:** link to cors changes needed on s3 page ([66592ff](https://github.com/smp46/pingvin-share-x/commit/66592ff9aa33589491dc2d85054ff88ee9f561be))
+* **s3:** direct uploads & downloads with presigned urls ([#181](https://github.com/smp46/pingvin-share-x/issues/181)) ([25f0394](https://github.com/smp46/pingvin-share-x/commit/25f039436a683f74e9497e63f58f4bc76b4c6565)), closes [#180](https://github.com/smp46/pingvin-share-x/issues/180)
+* **storage:** add per-user storage quotas ([#133](https://github.com/smp46/pingvin-share-x/issues/133)) ([c847a45](https://github.com/smp46/pingvin-share-x/commit/c847a45b0541b91078283e8b7d9eed13dbb10b38))
+
+### Bug Fixes
+
+* **dropzone:** remove transparency from folder button in dark mode ([#186](https://github.com/smp46/pingvin-share-x/issues/186)) ([8b640b9](https://github.com/smp46/pingvin-share-x/commit/8b640b9bb64f6dccd37af13430db8da7c66e2255))
+
+## 1.22.1-beta.0 (2026-08-08)
+
+## [2.0.0-beta.0](https://github.com/smp46/pingvin-share-x/compare/v1.22.1...v2.0.0-beta.0) (2026-08-18)
+
+### ⚠ BREAKING CHANGES
+
+* **s3:** direct uploads & downloads with presigned urls (#181)
+
+### Features
+
+* **config:** link to cors changes needed on s3 page ([66592ff](https://github.com/smp46/pingvin-share-x/commit/66592ff9aa33589491dc2d85054ff88ee9f561be))
+* **s3:** direct uploads & downloads with presigned urls ([#181](https://github.com/smp46/pingvin-share-x/issues/181)) ([25f0394](https://github.com/smp46/pingvin-share-x/commit/25f039436a683f74e9497e63f58f4bc76b4c6565)), closes [#180](https://github.com/smp46/pingvin-share-x/issues/180)
+* **storage:** add per-user storage quotas ([#133](https://github.com/smp46/pingvin-share-x/issues/133)) ([c847a45](https://github.com/smp46/pingvin-share-x/commit/c847a45b0541b91078283e8b7d9eed13dbb10b38))
+
+### Bug Fixes
+
+* **dropzone:** remove transparency from folder button in dark mode ([#186](https://github.com/smp46/pingvin-share-x/issues/186)) ([8b640b9](https://github.com/smp46/pingvin-share-x/commit/8b640b9bb64f6dccd37af13430db8da7c66e2255))
+
+## 1.22.1-beta.0 (2026-08-08)
+
+## [1.22.1-beta.0](https://github.com/smp46/pingvin-share-x/compare/v1.22.1...v1.22.1-beta.0) (2026-08-08)
+
+## [1.22.1](https://github.com/smp46/pingvin-share-x/compare/v1.22.0...v1.22.1) (2026-08-08)
+
+### Bug Fixes
+
+* **uploadPage:** properly handle chromium file pickers, prevent hydration error ([#176](https://github.com/smp46/pingvin-share-x/issues/176)) ([e38083b](https://github.com/smp46/pingvin-share-x/commit/e38083bef666a1819dbebb9e7017220016ff0989))
+
+## [1.22.0](https://github.com/smp46/pingvin-share-x/compare/v1.21.2...v1.22.0) (2026-08-07)
+
+### Features
+
+* **reverseshares**: customise reverse share urls ([#172](https://github.com/smp46/pingvin-share-x/issues/172)) ([7f221df](https://github.com/smp46/pingvin-share-x/commit/7f221dfaacbe7931eceee7fbbf90821d70347d8a))
+* **email:** add option to set reply-to to creator's email ([#159](https://github.com/smp46/pingvin-share-x/issues/159)) ([57704e5](https://github.com/smp46/pingvin-share-x/commit/57704e5943809bec0a7f12bbae4fe10576515b24))
+* **shares**:managed user shares ([#63](https://github.com/smp46/pingvin-share-x/issues/63)) ([d69281a](https://github.com/smp46/pingvin-share-x/commit/d69281aeff9209f61294c2abff8222ee2dc9c602))
+* **shares:** allow admins to bypass max file expiration ([#144](https://github.com/smp46/pingvin-share-x/issues/144)) ([48c9f57](https://github.com/smp46/pingvin-share-x/commit/48c9f571f0acb779395aa1cd8d672054c17868bb))
+* **shares**support folder uploads via drag'n'drop and selection ([#142](https://github.com/smp46/pingvin-share-x/issues/142)) ([be15cc8](https://github.com/smp46/pingvin-share-x/commit/be15cc828f06042440a97fb83b3bd939bb1cdd3e))
+* **uploads:** text based progress indicator & time remaining ([#154](https://github.com/smp46/pingvin-share-x/issues/154)) ([27414e6](https://github.com/smp46/pingvin-share-x/commit/27414e6d97611ad9fae811f172664eec35246b2f))
+
+
+### Bug Fixes
+
+* change oidc provider email verification behavior ([07aa8c0](https://github.com/smp46/pingvin-share-x/commit/07aa8c0a96030c439e9018ce94a2778bd37304e6))
+* correctly check for TRUST_PROXY env variable ([25e9cee](https://github.com/smp46/pingvin-share-x/commit/25e9cee7fb1c155300b5663fc5fedeea32d20954))
+* correctly specify ttl in ms ([dc0aa5f](https://github.com/smp46/pingvin-share-x/commit/dc0aa5f66287038d5f919e74948462f994b1d6b1))
+* **lang:** dont set lang cookie from fallback value ([#164](https://github.com/smp46/pingvin-share-x/issues/164)) ([4bcdbfd](https://github.com/smp46/pingvin-share-x/commit/4bcdbfd1b1db5697aac3e48e8592b8cc66269cba))
+* **share_id:** underscores allowed everywhere ids are validated ([#168](https://github.com/smp46/pingvin-share-x/issues/168)) ([80c4708](https://github.com/smp46/pingvin-share-x/commit/80c4708746364de9ff3dfa6b426b2653730a5dea))
+
+## [1.21.2](https://github.com/smp46/pingvin-share-x/compare/v1.21.1...v1.21.2) (2026-07-23)
+
+### Bug Fixes
+
+* **deps:** resolve security vulns via npm audit ([945c5e5](https://github.com/smp46/pingvin-share-x/commit/945c5e572dbf08021a15d510c9f12f1fc6ee9630))
+* **deps:** update backend sharp to non-vuln version ([9af800f](https://github.com/smp46/pingvin-share-x/commit/9af800f2a66f9ffd8fbf2926adce490723a77a05))
+* **deps:** update sharp & brace-expansion to non-vuln version ([d0f7ecd](https://github.com/smp46/pingvin-share-x/commit/d0f7ecdd7cb61eda264a61a3eeab346f33e2bf5a))
+
+## [1.21.1](https://github.com/smp46/pingvin-share-x/compare/v1.21.0...v1.21.1) (2026-07-17)
+
+### Bug Fixes
+
+* **deps:** update nodemailer to non-vuln version ([4bf90e9](https://github.com/smp46/pingvin-share-x/commit/4bf90e9562d4606659d04815564ba2f36777b882))
+* **reverseShares:** align max share size in modal with user/global settings ([#136](https://github.com/smp46/pingvin-share-x/issues/136)) ([88f7d36](https://github.com/smp46/pingvin-share-x/commit/88f7d36805c081329e1c2d967c33508d5bbe05eb))
+* **system:** correctly detect disk usage on mounted filesystems (linux) ([#126](https://github.com/smp46/pingvin-share-x/issues/126)) ([895ce5b](https://github.com/smp46/pingvin-share-x/commit/895ce5b00327efc1c388b3fd92d91e3e6615c2af))
+
+## [1.21.0](https://github.com/smp46/pingvin-share-x/compare/v1.20.1...v1.21.0) (2026-07-01)
+
+### Features
+
+* add Farsi/Persian ([#112](https://github.com/smp46/pingvin-share-x/issues/112)) ([d13350a](https://github.com/smp46/pingvin-share-x/commit/d13350abbcdac767f16d444e5536bf8a553b94a1))
+* **email:** add html email compatibility ([#104](https://github.com/smp46/pingvin-share-x/issues/104)) ([a38ec26](https://github.com/smp46/pingvin-share-x/commit/a38ec269e4f7a07dcdfb7cc8641d3842efe0255b))
+* norwegian language support & AI translations ([#108](https://github.com/smp46/pingvin-share-x/issues/108)) ([8185f44](https://github.com/smp46/pingvin-share-x/commit/8185f44a5faeb2dd53ee1dfc5ff1467ab0eb3841))
+* per user share size limits ([#109](https://github.com/smp46/pingvin-share-x/issues/109)) ([74d6701](https://github.com/smp46/pingvin-share-x/commit/74d6701391581d3e3bd7232e9086ada5d1ead33c))
+* **reverse share:** add simple mode policy in config ([#106](https://github.com/smp46/pingvin-share-x/issues/106)) ([468bbde](https://github.com/smp46/pingvin-share-x/commit/468bbde82bfc4177f147e5d7b1ac7127dfafb5ef))
+
+## [1.20.1](https://github.com/smp46/pingvin-share-x/compare/v1.20.0...v1.20.1) (2026-06-18)
+
+## [1.20.0](https://github.com/smp46/pingvin-share-x/compare/v1.19.1...v1.20.0) (2026-06-18)
+
+### Features
+
+* catalan language support & AI translations ([#96](https://github.com/smp46/pingvin-share-x/issues/96)) ([7eff4ec](https://github.com/smp46/pingvin-share-x/commit/7eff4ecbd964db03a03cb9629c71a79e1bb147fb))
+* optional email verification ([#99](https://github.com/smp46/pingvin-share-x/issues/99)) ([0296802](https://github.com/smp46/pingvin-share-x/commit/02968027a1dd57cbfea3de7864525c9380cc56b1))
+* **shares:** add infinite file retention period ([f6905fe](https://github.com/smp46/pingvin-share-x/commit/f6905fed9bd99c9be1d57ad4ec69cc275ae3405a))
+
+### Bug Fixes
+
+* add missing permissions to label workflows ([add126a](https://github.com/smp46/pingvin-share-x/commit/add126ad02b29232f92c61d409e44b8554af3fd1))
+* **deps:** resolve security vulns via npm audit ([e748463](https://github.com/smp46/pingvin-share-x/commit/e748463282f5f9c19f4d6ae925537613bec48af4))
+* **deps:** resolve security vulns via overrides ([500e91a](https://github.com/smp46/pingvin-share-x/commit/500e91af361652c18d7175a518dd99f54aef96bf))
+* **email:** localize email variables via defaultLanguage ([#101](https://github.com/smp46/pingvin-share-x/issues/101)) ([f1f829f](https://github.com/smp46/pingvin-share-x/commit/f1f829f0908b0dcc695c6a2fd7c9b01dfeb44445))
+* **reverseShares:** support admin file retention ([b4e2d8a](https://github.com/smp46/pingvin-share-x/commit/b4e2d8a135d9b12a04bfdee4799be20ce32a615c))
+
 ## [1.19.1](https://github.com/smp46/pingvin-share-x/compare/v1.19.0...v1.19.1) (2026-06-08)
 
 ### Bug Fixes

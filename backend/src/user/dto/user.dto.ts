@@ -1,5 +1,14 @@
 import { Expose, plainToClass } from "class-transformer";
-import { IsEmail, Length, Matches, MinLength } from "class-validator";
+import {
+  IsString,
+  IsBoolean,
+  IsEmail,
+  IsInt,
+  IsOptional,
+  Length,
+  Matches,
+  Min,
+} from "class-validator";
 import { i18nValidationMessage } from "nestjs-i18n";
 
 export class UserDTO {
@@ -18,18 +27,64 @@ export class UserDTO {
   email: string;
 
   @Expose()
+  @IsOptional()
+  @Matches(/^[\p{L} ,.'-]*$/u, {
+    message: i18nValidationMessage("validation.namePattern"),
+  })
+  displayName?: string;
+
+  @Expose()
   hasPassword: boolean;
 
-  @MinLength(8)
+  @IsString()
   password: string;
 
   @Expose()
   isAdmin: boolean;
 
   @Expose()
+  isActivated: boolean;
+
+  @Expose()
   isLdap: boolean;
 
   ldapDN?: string;
+
+  @Expose()
+  @IsOptional()
+  @Matches(/^[0-9]+$/, {
+    message: "shareSizeLimit must contain only digits",
+  })
+  shareSizeLimit?: string;
+
+  @Expose()
+  @IsOptional()
+  @Matches(/^[1-9][0-9]*$/, {
+    message: "storageQuotaLimit must be greater than 0",
+  })
+  storageQuotaLimit?: string;
+
+  @Expose()
+  @IsOptional()
+  @IsBoolean()
+  allowShare: boolean;
+
+  @Expose()
+  @IsOptional()
+  @IsBoolean()
+  allowCreateReverseShares: boolean;
+
+  @Expose()
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  maxShares?: number;
+
+  @Expose()
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  maxReverseShares?: number;
 
   @Expose()
   totpVerified: boolean;

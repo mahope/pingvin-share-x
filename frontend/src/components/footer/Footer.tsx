@@ -41,7 +41,7 @@ const Footer = () => {
             </Anchor>
           )}
           <Text size="xs" color="dimmed">
-            Bygget på{" "}
+            {t("footer.poweredBy")}{" "}
             <Anchor
               size="xs"
               href="https://github.com/smp46/pingvin-share-x"

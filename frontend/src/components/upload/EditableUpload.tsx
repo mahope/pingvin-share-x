@@ -9,9 +9,14 @@ import Dropzone from "../../components/upload/Dropzone";
 import FileList from "../../components/upload/FileList";
 import useConfig from "../../hooks/config.hook";
 import useTranslate from "../../hooks/useTranslate.hook";
+import useUser from "../../hooks/user.hook";
 import shareService from "../../services/share.service";
 import { FileListItem, FileMetaData, FileUpload } from "../../types/File.type";
 import toast from "../../utils/toast.util";
+import {
+  getNormalizedFileName,
+  filterDuplicateFiles,
+} from "../../utils/file.util";
 
 const promiseLimit = pLimit(3);
 let errorToastShown = false;
@@ -29,6 +34,7 @@ const EditableUpload = ({
   const t = useTranslate();
   const router = useRouter();
   const config = useConfig();
+  const { user } = useUser();
 
   const chunkSize = useRef(parseInt(config.get("share.chunkSize")));
 
@@ -59,7 +65,18 @@ const EditableUpload = ({
     setExistingFiles(_existingFiles);
   };
 
-  maxShareSize ??= parseInt(config.get("share.maxSize"));
+  maxShareSize ??= user?.shareSizeLimit
+    ? parseInt(user.shareSizeLimit)
+    : parseInt(config.get("share.maxSize"));
+
+  const currentFilesSize = useMemo(() => {
+    return (
+      existingFiles
+        .filter((file) => !file.deleted)
+        .reduce((acc, file) => acc + parseInt(file.size), 0) +
+      uploadingFiles.reduce((acc, file) => acc + file.size, 0)
+    );
+  }, [existingFiles, uploadingFiles]);
 
   const uploadFiles = async (files: FileUpload[]) => {
     const fileUploadPromises = files.map(async (file, fileIndex) =>
@@ -96,7 +113,7 @@ const EditableUpload = ({
                 blob,
                 {
                   id: fileId,
-                  name: file.name,
+                  name: getNormalizedFileName(file),
                 },
                 chunkIndex,
                 chunks,
@@ -181,7 +198,17 @@ const EditableUpload = ({
   };
 
   const appendFiles = (appendingFiles: FileUpload[]) => {
-    setUploadingFiles([...appendingFiles, ...uploadingFiles]);
+    const combinedExisting = [...existingFiles, ...uploadingFiles];
+    const filtered = filterDuplicateFiles(
+      appendingFiles,
+      combinedExisting,
+      (normalizedName) =>
+        toast.error(
+          t("upload.notify.duplicate-skipped", { name: normalizedName }),
+        ),
+    );
+    if (filtered.length === 0) return;
+    setUploadingFiles([...filtered, ...uploadingFiles]);
   };
 
   useEffect(() => {
@@ -217,6 +244,7 @@ const EditableUpload = ({
       <Dropzone
         title={t("share.edit.append-upload")}
         maxShareSize={maxShareSize}
+        currentFilesSize={currentFilesSize}
         onFilesChanged={appendFiles}
         isUploading={isUploading}
       />

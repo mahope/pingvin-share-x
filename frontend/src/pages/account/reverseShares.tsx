@@ -24,6 +24,7 @@ import { HoverTip } from "../../components/core/HoverTip";
 import CenterLoader from "../../components/core/CenterLoader";
 import showCreateReverseShareModal from "../../components/share/modals/showCreateReverseShareModal";
 import useConfig from "../../hooks/config.hook";
+import useUser from "../../hooks/user.hook";
 import useTranslate from "../../hooks/useTranslate.hook";
 import shareService from "../../services/share.service";
 import { MyReverseShare } from "../../types/share.type";
@@ -36,8 +37,13 @@ const MyShares = () => {
   const t = useTranslate();
 
   const config = useConfig();
+  const { user } = useUser();
   const appUrl = config.get("general.appUrl");
   const defaultAppUrl = config.get("general.appUrl", true);
+
+  const userMaxShareSize = user?.shareSizeLimit
+    ? parseInt(user.shareSizeLimit)
+    : parseInt(config.get("share.maxSize"));
 
   const [reverseShares, setReverseShares] = useState<MyReverseShare[]>();
 
@@ -66,22 +72,29 @@ const MyShares = () => {
             </ActionIcon>
           </HoverTip>
         </Group>
-        <Button
-          onClick={() =>
-            showCreateReverseShareModal(
-              modals,
-              config.get("smtp.enabled"),
-              config.get("share.maxExpiration"),
-              config.get("share.defaultExpiration"),
-              appUrl,
-              defaultAppUrl,
-              getReverseShares,
-            )
-          }
-          leftIcon={<TbPlus size={20} />}
-        >
-          <FormattedMessage id="common.button.create" />
-        </Button>
+        {user?.allowCreateReverseShares !== false && (
+          <Button
+            onClick={() =>
+              showCreateReverseShareModal(
+                modals,
+                config.get("smtp.enabled"),
+                user?.isAdmin
+                  ? { value: 0, unit: "days" }
+                  : config.get("share.maxExpiration"),
+                config.get("share.defaultExpiration"),
+                config.get("share.reverseShareSimpleOnly"),
+                appUrl,
+                defaultAppUrl,
+                userMaxShareSize,
+                getReverseShares,
+                config.get("share.shareIdLength"),
+              )
+            }
+            leftIcon={<TbPlus size={20} />}
+          >
+            <FormattedMessage id="common.button.create" />
+          </Button>
+        )}
       </Group>
       {reverseShares.length == 0 ? (
         <Center style={{ height: "70vh" }}>
@@ -89,8 +102,19 @@ const MyShares = () => {
             <Title order={3}>
               <FormattedMessage id="account.reverseShares.title.empty" />
             </Title>
-            <Text>
-              <FormattedMessage id="account.reverseShares.description.empty" />
+            <Text
+              color={
+                user?.allowCreateReverseShares === false ? "dimmed" : undefined
+              }
+              align="center"
+            >
+              <FormattedMessage
+                id={
+                  user?.allowCreateReverseShares === false
+                    ? "account.reverseShares.description.not-allowed"
+                    : "account.reverseShares.description.empty"
+                }
+              />
             </Text>
           </Stack>
         </Center>
