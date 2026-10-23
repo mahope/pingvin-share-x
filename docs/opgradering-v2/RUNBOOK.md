@@ -77,12 +77,15 @@ ZIP-download og en bucket-flytning med `mc mirror`. Se "Hvad er testet" nederst.
    1. Kør backup + sidste rclone-sync (punkt 1-2 ovenfor) mens det gamle image stadig kører.
    2. Stop containeren (`pingvin`) i Dokploy.
    3. Sæt nyt image-tag `:filer-N`, behold samme volume-mount til `/opt/app/backend/data`.
-   4. Start containeren. Migrationerne kører automatisk ved opstart (verificeret lokalt: 41
-      migrationer, herunder flytning af `allowRegistration`/`allowUnauthenticatedShares`/
-      `secureCookies`/`sessionDuration`/`enableEmailVerification`/`allowAdminAccessAllShares`
-      fra `general`/`share` til `security`-kategorien, og `enableShareEmailRecipients`/
-      `enableShareDownloadNotifications` fra `email` til `share`). Config-værdierne overlever
-      migrationen under de nye nøgler — det er verificeret lokalt, ikke kun antaget.
+   4. Start containeren. Migrationerne kører automatisk ved opstart. `prisma/migrations`
+      indeholder 41 migrationer i alt, men på et eksisterende v1-volume er langt de fleste
+      allerede anvendt — verificeret lokalt var det kun de 15 nyeste (migrationer fra
+      30/4-2026 og frem) der reelt kørte, herunder flytning af
+      `allowRegistration`/`allowUnauthenticatedShares`/`secureCookies`/`sessionDuration`/
+      `enableEmailVerification`/`allowAdminAccessAllShares` fra `general`/`share` til
+      `security`-kategorien, og `enableShareEmailRecipients`/`enableShareDownloadNotifications`
+      fra `email` til `share`. Config-værdierne overlever migrationen under de nye nøgler —
+      det er verificeret lokalt, ikke kun antaget.
    5. Log ind som admin, ret `s3.bucketName` som i punkt 2.
    6. Tjek `/admin/config/security` at `Tillad oprettelser` og `Tillad uautoriserede delinger`
       stadig står som før (se "Efter"-tjeklisten — dette er specifikt det der tidligere er
@@ -96,6 +99,9 @@ ZIP-download og en bucket-flytning med `mc mirror`. Se "Hvad er testet" nederst.
       kan fejle stille. Tjek browserens devtools-konsol for CORS-fejl hvis uploaden hænger ved
       0 % eller fejler på en `PUT` mod bucketen.
 - [ ] Download af en **gammel** deling (oprettet før opgraderingen) virker og filen er intakt.
+      I v2 svarer download-endpointet med `302` til en presignet S3-URL (ikke filen direkte) —
+      normalt for browseren, men et script/curl-tjek skal følge redirects (`curl -L`), ellers
+      ser det ud som en tom/fejlende download.
 - [ ] ZIP-download af en deling med flere filer virker.
 - [ ] Anonym forsøger at oprette en deling direkte (uden upload-link) → 403.
 - [ ] Anonym forsøger at oprette en bruger (`/auth/signUp`) → 403, "Tillad oprettelser" er
@@ -105,6 +111,11 @@ ZIP-download og en bucket-flytning med `mc mirror`. Se "Hvad er testet" nederst.
       tjek den eksplicit, stol ikke på hukommelsen fra sidste deploy.
 - [ ] Forsiden, upload-siden og en delingsside viser dansk tekst og Mahoje-branding (ingen
       engelske strenge). Sammenlign evt. med screenshots i `docs/opgradering-v2/screenshots/`.
+      **Vigtigt:** dette afhænger af configen `general.defaultLanguage` = `da-DK` — den styrer
+      sproget for gæster (anonyme besøgende uden en `language`-cookie), og vinder over browserens
+      `Accept-Language`-header. Hvis den af en eller anden grund er tom/`en-US` efter et
+      image-skift, ser en gæst med en dansk browser alligevel engelsk UI. Tjek den eksplicit som
+      en af config-værdierne i punkt 3.4/3.6 under Deploy, ikke kun via et kig på siden.
 
 ## Rollback
 
@@ -156,26 +167,31 @@ Ikke aktiveret nu, men nævnes fordi de kan være relevante for Mahoje Filer sen
 
 ## Hvad er testet lokalt (denne opgave)
 
-Ingen kald mod `filer.mahoje.dk`, Dokploy eller Hetzner — alt kørt mod MinIO i en isoleret
-Docker-opsætning på byggemaskinen:
-1. Gammelt prod-image (`:filer-5`) startet mod en tom data-volume + MinIO. Admin oprettet
-   (bliver automatisk admin som første bruger), S3 sat op, registrering og uautoriserede
-   delinger slået fra, en almindelig bruger ("frederik") oprettet, en deling med en fil på
-   27 MB uploadet i 3 chunks, og et upload-link med en anonym upload.
-2. Samme volume genstartet med det nye v2-image. 41 migrationer kørte uden fejl. Admin-login
-   virkede. Den gamle 27 MB-fil downloadede byte-identisk (sha256-match). S3- og
-   security-config (inkl. `allowRegistration`/`allowUnauthenticatedShares` = false) var
-   bevaret under de nye nøglenavne. Anonym fik fortsat 403 på både oprettelse af deling og
-   signup.
+Se `docs/opgradering-v2/VERIFIKATION.md` for den fulde, trin-for-trin dokumenterede kørsel
+(kommandoer, forventet/faktisk, OK/FEJL) — det er den autoritative kilde. Kort resumé:
+
+Ingen kald mod `filer.mahoje.dk`, Dokploy eller Hetzner. MinIO kunne ikke bruges (se
+VERIFIKATION.md for hvorfor) — testen kørte i stedet mod `adobe/s3mock`, en S3-API-kompatibel
+mock med samme presignerede-URL- og CORS-opførsel:
+1. Gammelt prod-image (`:filer-5`) startet mod en tom data-volume + mock-S3. Admin oprettet,
+   S3 sat op, registrering og uautoriserede delinger slået fra, en deling med en fil på 27 MB
+   uploadet i 4 chunks, og et upload-link med en anonym upload.
+2. Samme volume genstartet med det nye v2-image. De ventende migrationer kørte uden fejl
+   (se note ved punkt 3.4 ovenfor om antal). Admin-login virkede. Den gamle 27 MB-fil
+   downloadede byte-identisk (sha256-match, via det nye 302-til-presignet-URL-flow). S3- og
+   security-config var bevaret under de nye nøglenavne. Anonym fik fortsat 403 på både
+   oprettelse af deling og signup.
 3. Browser-test (Playwright/Chromium headless, dansk sprog) mod v2-imaget: anonym upload via
    upload-linket af en fil på 28,3 MB og en lille tekstfil (reel presignet S3-upload gennem
    CORS, ikke en server-relayed upload), download af begge filer (sha256-match), ZIP-download
-   af begge filer verificeret med `unzip -l`. Screenshots af forside, tom upload-side og
-   delingsside i lys tilstand ligger i `docs/opgradering-v2/screenshots/` — fuldt dansk,
-   Mahoje-branding (logo, "mahoje.dk", "Bygget på Pingvin Share X").
-4. Bucket-flytning: en ny MinIO-bucket oprettet, objekter kopieret med `mc mirror` med samme
-   prefix (`filer/`), kun `s3.bucketName` ændret i config. Den gamle 27 MB-delings download
-   virkede stadig (ny presignet URL pegede på den nye bucket, byte-identisk fil).
+   af begge filer verificeret med `unzip -l` + sha256. Forside, tom upload-side og delingsside
+   var fuldt dansk med Mahoje-branding — men kun efter `general.defaultLanguage` blev sat til
+   `da-DK` (se tjekpunktet ovenfor). Screenshots fra en tidligere kørsel ligger stadig i
+   `docs/opgradering-v2/screenshots/`.
+4. Bucket-flytning: en ny bucket oprettet, objekter kopieret (download+upload, ikke
+   server-side copy — samme begrænsning som Hetzner), kun `s3.bucketName` ændret i config.
+   Den gamle 27 MB-delings download virkede stadig (ny presignet URL pegede på den nye bucket,
+   byte-identisk fil).
 
 ## Åbne punkter
 
