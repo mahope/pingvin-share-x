@@ -421,8 +421,9 @@ App.getInitialProps = async ({ ctx }: { ctx: GetServerSidePropsContext }) => {
         ? cookieLanguage
         : undefined) ||
       brandedLanguage ||
-      defaultLanguage ||
-      "en";
+      (defaultLanguage && BRANDED_LANGUAGES.includes(defaultLanguage)
+        ? defaultLanguage
+        : "en-US");
   }
   return { pageProps };
 };

@@ -15,11 +15,13 @@ window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push
         .replace(/^\\/(s|share)\\/[^/]+(\\/edit)?/,"/share$2")
         .replace(/^\\/auth\\/(resetPassword|totp|verify)\\/[^/]+/,"/auth/$1");
       return x.origin+p;
-    }catch(e){return u}
+    }catch(e){return location.origin}
   }
   plausible.init({transformRequest:function(p){
     p.u=clean(p.u);
     if(p.r&&p.r.indexOf(location.origin)===0)p.r=clean(p.r);
+    // Outbound-link and file-download events carry the raw href in props.url.
+    if(p.p&&typeof p.p.url==="string"&&p.p.url.indexOf(location.origin)===0)p.p.url=clean(p.p.url);
     return p;
   }});
 })();

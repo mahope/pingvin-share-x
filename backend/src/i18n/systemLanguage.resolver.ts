@@ -11,8 +11,9 @@ export class SystemLanguageResolver implements I18nResolver {
   constructor(private readonly configService: ConfigService) {}
 
   // Answer API errors in the language the page is shown in: the visitor's own
-  // choice, then Danish or English from the browser. Without a request (e.g.
-  // emails sent from jobs) the configured default language is used.
+  // choice, then Danish or English from the browser, then the configured
+  // default. Emails pass the default language explicitly, since they go to
+  // other people than the one making the request.
   resolve(context: ExecutionContext): string | undefined {
     const request =
       context?.getType() === "http"

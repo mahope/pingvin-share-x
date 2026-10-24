@@ -113,14 +113,14 @@ export class EmailService {
       creator:
         creator?.displayName ||
         creator?.username ||
-        this.i18n.t("email.shareRecipientsCreatorFallback"),
+        this.i18n.t("email.shareRecipientsCreatorFallback", { lang }),
       creatorEmail: creator?.email ?? "",
       shareUrl,
-      desc: description ?? this.i18n.t("email.shareRecipientsDescFallback"),
+      desc: description ?? this.i18n.t("email.shareRecipientsDescFallback", { lang }),
       expires:
         moment(expiration).unix() != 0
           ? moment(expiration).locale(locale).fromNow()
-          : this.i18n.t("email.shareRecipientsExpiresNeverFallback"),
+          : this.i18n.t("email.shareRecipientsExpiresNeverFallback", { lang }),
       name: recipientName ?? "",
       recipient: recipientName ?? "",
       recipientEmail,

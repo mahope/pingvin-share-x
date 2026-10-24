@@ -32,6 +32,7 @@ type NavLink = {
   label?: string;
   component?: ReactNode;
   action?: () => Promise<void>;
+  lang?: string;
 };
 
 type MobileMenuView = "root" | "shares" | "profile";
@@ -221,6 +222,7 @@ const Header = () => {
 
   const mobileLanguageLink: NavLink = {
     label: languageToggle.label,
+    lang: languageToggle.lang,
     action: async () => languageToggle.toggle(),
   };
 
@@ -347,6 +349,7 @@ const Header = () => {
         <UnstyledButton
           key={link.label}
           className={classes.mobileMenuButton}
+          lang={link.lang}
           onClick={() => void link.action?.()}
         >
           <span className={classes.mobileMenuButtonContent}>
