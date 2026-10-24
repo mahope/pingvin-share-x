@@ -20,7 +20,7 @@ export default {
   "home.title": "Store filer, sendt direkte",
   "home.description": "Her sender jeg filer til mine kunder, og her kan du sende filer til mig. Op til 25 GB ad gangen.",
   "home.bullet.a.name": "Har du fået et link fra mig?",
-  "home.bullet.a.description": "Åbn linket, vælg dine filer og tryk send. Du skal ikke oprette en konto.",
+  "home.bullet.a.description": "Åbn linket, vælg dine filer og tryk Del. Du skal ikke oprette en konto.",
   "home.bullet.b.name": "Store filer er ikke et problem",
   "home.bullet.b.description": "Video, billeder og zip-filer i ét hug. Filerne sendes i små bidder, så de også kommer igennem på en almindelig forbindelse.",
   "home.bullet.c.name": "Hos mig, ikke hos en tredjepart",

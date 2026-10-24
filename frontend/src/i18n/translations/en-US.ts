@@ -24,7 +24,7 @@ export default {
   "home.description":
     "This is where I send files to my clients, and where you can send files to me. Up to 25 GB at a time.",
   "home.bullet.a.name": "Did you get a link from me?",
-  "home.bullet.a.description": "Open the link, pick your files and press send. You don't need an account.",
+  "home.bullet.a.description": "Open the link, pick your files and press Share. You don't need an account.",
   "home.bullet.b.name": "Large files are fine",
   "home.bullet.b.description":
     "Video, photos and zip files in one go. Files are sent in small chunks, so they get through on an ordinary connection too.",
