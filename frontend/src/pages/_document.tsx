@@ -1,5 +1,6 @@
 import { createGetInitialProps } from "@mantine/next";
 import Document, { Head, Html, Main, NextScript } from "next/document";
+import { PLAUSIBLE_INIT, PLAUSIBLE_SCRIPT } from "../utils/analytics.util";
 
 const getInitialProps = createGetInitialProps();
 
@@ -27,6 +28,8 @@ export default class _Document extends Document {
           />
 
           <meta name="robots" content="noindex" />
+          <script async src={PLAUSIBLE_SCRIPT} />
+          <script dangerouslySetInnerHTML={{ __html: PLAUSIBLE_INIT }} />
           <meta
             name="theme-color"
             content="#ffffff"

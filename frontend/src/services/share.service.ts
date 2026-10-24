@@ -1,4 +1,4 @@
-import { deleteCookie, setCookie } from "cookies-next";
+import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import mime from "mime-types";
 import axios from "axios";
 import { translateOutsideContext } from "../hooks/useTranslate.hook";
@@ -11,6 +11,7 @@ import {
   ShareMetaData,
   UpdateShare,
 } from "../types/share.type";
+import { track } from "../utils/analytics.util";
 import { generateUUID } from "../utils/crypto.util";
 import {
   type UploadProgressHandler,
@@ -36,6 +37,9 @@ const create = async (share: CreateShare, isReverseShare = false) => {
 const completeShare = async (id: string) => {
   if (!isValidId(id)) throw new Error("Invalid ID");
   const response = (await api.post(`shares/${id}/complete`)).data;
+  track("Upload", {
+    type: getCookie("reverse_share_token") ? "upload-link" : "deling",
+  });
   deleteCookie("reverse_share_token");
   return response;
 };
@@ -125,6 +129,7 @@ const downloadFile = async (
   const recipientQuery = recipientId
     ? `?recipient=${encodeURIComponent(recipientId)}`
     : "";
+  track("Download", { type: fileId === "zip" ? "zip" : "fil" });
   window.location.href = `${window.location.origin}/api/shares/${shareId}/files/${fileId}${recipientQuery}`;
 };
 
