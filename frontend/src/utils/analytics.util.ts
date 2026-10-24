@@ -12,8 +12,7 @@ window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push
       var x=new URL(u);
       var p=x.pathname
         .replace(/^\\/upload\\/[^/]+/,"/upload-link")
-        .replace(/^\\/(s|share)\\/[^/]+\\/edit/,"/share/edit")
-        .replace(/^\\/(s|share)\\/[^/]+/,"/share")
+        .replace(/^\\/(s|share)\\/[^/]+(\\/edit)?/,"/share$2")
         .replace(/^\\/auth\\/(resetPassword|totp|verify)\\/[^/]+/,"/auth/$1");
       return x.origin+p;
     }catch(e){return u}
