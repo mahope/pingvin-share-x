@@ -22,6 +22,7 @@ import useTranslate from "../../hooks/useTranslate.hook";
 import authService from "../../services/auth.service";
 import Logo from "../Logo";
 import ActionAvatar from "./ActionAvatar";
+import LanguageToggle, { useLanguageToggle } from "./LanguageToggle";
 import NavbarShareMenu from "./NavbarShareMenu";
 
 const HEADER_HEIGHT = 60;
@@ -150,6 +151,7 @@ const Header = () => {
   const router = useRouter();
   const config = useConfig();
   const t = useTranslate();
+  const languageToggle = useLanguageToggle();
 
   const isShareOrUploadPage = [
     "/upload/[reverseShareToken]",
@@ -217,6 +219,11 @@ const Header = () => {
     });
   }
 
+  const mobileLanguageLink: NavLink = {
+    label: languageToggle.label,
+    action: async () => languageToggle.toggle(),
+  };
+
   const mobileRootLinks: NavLink[] = user
     ? [
         ...(user.allowShare !== false
@@ -233,8 +240,9 @@ const Header = () => {
         {
           label: t("common.button.profile"),
         },
+        mobileLanguageLink,
       ]
-    : unauthenticatedLinks;
+    : [...unauthenticatedLinks, mobileLanguageLink];
 
   const mobileShareLinks: NavLink[] = [
     {
@@ -376,7 +384,10 @@ const Header = () => {
             <Logo />
           </Link>
           <Group spacing={5} className={classes.links}>
-            <Group>{desktopItems}</Group>
+            <Group>
+              {desktopItems}
+              <LanguageToggle className={classes.link} />
+            </Group>
           </Group>
           <Burger
             opened={opened}

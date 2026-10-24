@@ -18,7 +18,8 @@ const cache = createIntlCache();
 
 export const translateOutsideContext = () => {
   const locale =
-    getCookie(LANGUAGE_COOKIE)?.toString() ?? navigator.language.split("-")[0];
+    getCookie(LANGUAGE_COOKIE)?.toString() ??
+    i18nUtil.getBrandedLanguage(navigator.languages);
 
   const intl = createIntl(
     {

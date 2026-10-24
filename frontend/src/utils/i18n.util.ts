@@ -31,6 +31,19 @@ const getLanguageFromAcceptHeader = (acceptLanguage?: string) => {
   return "en";
 };
 
+// Mahoje Filer is only branded in Danish and English.
+export const BRANDED_LANGUAGES = ["da-DK", "en-US"];
+
+// Danish if Danish comes before English in the given language list (an
+// Accept-Language header or navigator.languages), otherwise English.
+const getBrandedLanguage = (languages: string | readonly string[]) => {
+  const list = typeof languages === "string" ? languages.split(",") : languages;
+  const first = list
+    .map((l) => l.split(";")[0].trim().toLowerCase().split("-")[0])
+    .find((l) => l === "da" || l === "en");
+  return first === "da" ? "da-DK" : "en-US";
+};
+
 const isLanguageSupported = (code: string) => {
   return Object.values(LOCALES).some((l) => l.code === code);
 };
@@ -49,6 +62,7 @@ const setLanguageCookie = (code: string) => {
 export default {
   getLocaleByCode,
   getLanguageFromAcceptHeader,
+  getBrandedLanguage,
   isLanguageSupported,
   setLanguageCookie,
 };

@@ -31,7 +31,10 @@ import globalStyle from "../styles/mantine.style";
 import "../styles/fonts.css";
 import Config from "../types/config.type";
 import { CurrentUser } from "../types/user.type";
-import i18nUtil, { LANGUAGE_COOKIE } from "../utils/i18n.util";
+import i18nUtil, {
+  BRANDED_LANGUAGES,
+  LANGUAGE_COOKIE,
+} from "../utils/i18n.util";
 import userPreferences from "../utils/userPreferences.util";
 import Footer from "../components/footer/Footer";
 import { getDefaultConfig } from "../utils/defaultConfig.util";
@@ -223,8 +226,8 @@ function App({ Component, pageProps }: AppProps) {
 
   useEffect(() => {
     if (!pageProps.language) return;
-    const cookieLanguage = getCookie(LANGUAGE_COOKIE);
-    if (!cookieLanguage) {
+    const cookieLanguage = getCookie(LANGUAGE_COOKIE)?.toString();
+    if (!cookieLanguage || !BRANDED_LANGUAGES.includes(cookieLanguage)) {
       if (!pageProps.isConfigFallback) {
         i18nUtil.setLanguageCookie(pageProps.language);
       }
@@ -409,16 +412,14 @@ App.getInitialProps = async ({ ctx }: { ctx: GetServerSidePropsContext }) => {
     // default language is only used when the browser sends no language at all.
     const acceptLanguage = ctx.req.headers["accept-language"];
     const brandedLanguage = acceptLanguage
-      ? acceptLanguage
-          .split(",")
-          .map((l) => l.split(";")[0].trim().toLowerCase().split("-")[0])
-          .find((l) => l === "da" || l === "en") === "da"
-        ? "da-DK"
-        : "en-US"
+      ? i18nUtil.getBrandedLanguage(acceptLanguage)
       : undefined;
+    const cookieLanguage = ctx.req.cookies[LANGUAGE_COOKIE];
 
     pageProps.language =
-      ctx.req.cookies[LANGUAGE_COOKIE] ||
+      (cookieLanguage && BRANDED_LANGUAGES.includes(cookieLanguage)
+        ? cookieLanguage
+        : undefined) ||
       brandedLanguage ||
       defaultLanguage ||
       "en";
